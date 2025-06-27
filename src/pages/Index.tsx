@@ -15,7 +15,7 @@ const Index = () => {
   const [currentSection, setCurrentSection] = useState('intro');
   
   // Get guest name from URL parameter
-  const guestName = searchParams.get('guest') || "our beloved guest";
+  const guestName = searchParams.get('guest') || "You";
 
   const handleCardOpen = () => {
     setCurrentSection('hero');
@@ -44,8 +44,8 @@ const Index = () => {
         <>
           {/* Pigeon Hero Section */}
           <PigeonHero 
-            coupleNames="Sarah & Michael"
-            heroMessage="Join us as we celebrate 25 beautiful years of love, laughter, and endless adventures together."
+            coupleNames="Aarav & Riya"
+            heroMessage="A decade of love, a lifetime to go... Join us as we celebrate 10 beautiful years of laughter, adventures, and endless love."
             onScrollToNext={handleScrollToNext}
           />
 
@@ -73,8 +73,8 @@ const Index = () => {
           <footer className="bg-dark-brown text-white py-12">
             <div className="max-w-4xl mx-auto px-6 text-center">
               <div className="mb-6">
-                <h3 className="font-dancing text-3xl text-gold mb-2">Sarah & Michael</h3>
-                <p className="font-playfair text-lg">25 Years of Love</p>
+                <h3 className="font-dancing text-3xl text-gold mb-2">Aarav & Riya</h3>
+                <p className="font-playfair text-lg">10 Years of Love</p>
               </div>
               <div className="border-t border-gold/20 pt-6">
                 <p className="font-sans text-sm text-white/70">

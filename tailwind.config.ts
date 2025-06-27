@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -54,18 +53,24 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// Anniversary theme colors - Classic Love palette
+				// Enhanced Anniversary theme colors
 				ivory: '#EAE2D6',
-				gold: '#B08B4F',
+				gold: '#C8A97E',
 				'dark-brown': '#5D4037',
 				'warm-cream': '#F7F3ED',
 				'soft-gold': '#D4A574',
-				'deep-gold': '#8B6914',
+				'deep-gold': '#B76E79',
+				'blush-pink': '#FFE4E1',
+				'rose-gold': '#E8B4B8',
 			},
 			fontFamily: {
 				'playfair': ['Playfair Display', 'serif'],
 				'dancing': ['Dancing Script', 'cursive'],
 				'sans': ['Open Sans', 'sans-serif'],
+			},
+			backgroundImage: {
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -138,6 +143,60 @@ export default {
 					'50%': {
 						transform: 'translateY(-10px)'
 					}
+				},
+				'envelope-open': {
+					'0%': {
+						transform: 'rotateY(180deg) scale(1)'
+					},
+					'50%': {
+						transform: 'rotateY(180deg) scale(1.1)'
+					},
+					'100%': {
+						transform: 'rotateY(180deg) scale(0.9) translateY(-20px)',
+						opacity: '0.3'
+					}
+				},
+				'seal-crack': {
+					'0%': {
+						transform: 'scale(1)',
+						filter: 'brightness(1)'
+					},
+					'50%': {
+						transform: 'scale(1.1)',
+						filter: 'brightness(0.8)'
+					},
+					'100%': {
+						transform: 'scale(0.9)',
+						filter: 'brightness(0.6)'
+					}
+				},
+				'crack': {
+					'0%': {
+						opacity: '0',
+						transform: 'scale(0.8)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'scale(1.2)'
+					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0'
+					},
+					'100%': {
+						opacity: '1'
+					}
+				},
+				'scale-in': {
+					'0%': {
+						transform: 'scale(0.8)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '1'
+					}
 				}
 			},
 			animation: {
@@ -148,6 +207,11 @@ export default {
 				'pigeon-fly': 'pigeon-fly 3s ease-in-out',
 				'seal-melt': 'seal-melt 1s ease-in-out forwards',
 				'float': 'float 3s ease-in-out infinite',
+				'envelope-open': 'envelope-open 1.2s ease-in-out forwards',
+				'seal-crack': 'seal-crack 0.8s ease-in-out forwards',
+				'crack': 'crack 0.5s ease-out forwards',
+				'fade-in': 'fade-in 0.6s ease-out',
+				'scale-in': 'scale-in 0.4s ease-out',
 			}
 		}
 	},
