@@ -12,16 +12,32 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   const [flapOpened, setFlapOpened] = useState(false);
   const [letterPulled, setLetterPulled] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [flipProgress, setFlipProgress] = useState(0);
+  const [flapProgress, setFlapProgress] = useState(0);
 
-  const handleCardClick = () => {
-    if (!isFlipped) {
+  const handleFlipSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    setFlipProgress(value);
+    
+    if (value >= 100 && !isFlipped) {
       setIsFlipped(true);
+    } else if (value < 100 && isFlipped) {
+      setIsFlipped(false);
+      // Reset flap state when going back
+      setFlapOpened(false);
+      setLetterPulled(false);
+      setShowInvite(false);
+      setFlapProgress(0);
     }
   };
 
-  const handleFlapClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (isFlipped && !flapOpened) {
+  const handleFlapSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isFlipped) return;
+    
+    const value = parseInt(e.target.value);
+    setFlapProgress(value);
+    
+    if (value >= 100 && !flapOpened) {
       setFlapOpened(true);
       // After flap opens, show the letter peek
       setTimeout(() => {
@@ -32,7 +48,11 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
             onCardOpen();
           }, 2000);
         }, 800);
-      }, 600);
+      }, 300);
+    } else if (value < 100 && flapOpened) {
+      setFlapOpened(false);
+      setLetterPulled(false);
+      setShowInvite(false);
     }
   };
 
@@ -45,14 +65,45 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         <div className="absolute bottom-40 left-1/4 w-3 h-3 bg-gold/20 rounded-full animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
+      {/* Controls */}
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30 space-y-4">
+        {/* Flip Slider */}
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gold/20">
+          <p className="text-sm text-dark-brown font-medium mb-2 text-center">💌 Slide to flip the card</p>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={flipProgress}
+            onChange={handleFlipSliderChange}
+            className="w-48 h-2 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb"
+          />
+        </div>
+
+        {/* Flap Slider - Only show when flipped */}
+        {isFlipped && (
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gold/20 animate-fade-in">
+            <p className="text-sm text-dark-brown font-medium mb-2 text-center">📂 Slide to lift the flap</p>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={flapProgress}
+              onChange={handleFlapSliderChange}
+              className="w-48 h-2 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb"
+            />
+          </div>
+        )}
+      </div>
+
       {/* Envelope Container */}
       <div className="relative w-96 h-64 perspective-1000">
         {/* Envelope */}
         <div 
-          className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
-            isFlipped ? 'rotate-y-180' : ''
-          }`}
-          onClick={handleCardClick}
+          className="relative w-full h-full transition-transform duration-300 transform-style-preserve-3d"
+          style={{
+            transform: `rotateY(${flipProgress * 1.8}deg)`
+          }}
         >
           {/* Front Side - Envelope */}
           <div className="absolute inset-0 w-full h-full backface-hidden">
@@ -80,67 +131,54 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   <p className="font-playfair text-2xl text-dark-brown">Aarav & Riya</p>
                 </div>
               </div>
-
-              {/* Flip instruction */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-gold/20 backdrop-blur-sm rounded-full px-4 py-2 animate-pulse">
-                  <p className="text-sm text-dark-brown font-medium">💌 Flip the Card</p>
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Back Side - Envelope with Flap */}
+          {/* Back Side - Envelope with Enhanced Flap */}
           <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180">
             {/* Envelope Body */}
-            <div className="w-full h-full bg-gradient-to-br from-warm-cream to-ivory rounded-lg shadow-2xl border border-gold/30 relative">
+            <div className="w-full h-full bg-gradient-to-br from-warm-cream to-ivory rounded-lg shadow-2xl border border-gold/30 relative overflow-hidden">
               {/* Inner envelope shadow */}
               <div className="absolute inset-2 bg-gradient-to-br from-white/40 to-ivory/60 rounded-md"></div>
               
               {/* Letter inside (visible when flap opens) */}
-              <div className={`absolute inset-6 bg-white rounded-sm shadow-inner border border-gold/20 transition-all duration-1000 ${
-                letterPulled ? 'transform -translate-y-4 scale-105' : 'transform translate-y-0'
+              <div className={`absolute inset-6 bg-white rounded-sm shadow-inner border border-gold/20 transition-all duration-800 ${
+                letterPulled ? 'transform -translate-y-6 scale-110 shadow-2xl' : 'transform translate-y-0'
               }`}>
                 <div className="p-4 text-center">
-                  <div className="mb-2">
-                    <Heart className="w-4 h-4 text-gold mx-auto" />
+                  <div className="mb-3">
+                    <Heart className="w-6 h-6 text-gold mx-auto animate-pulse" />
                   </div>
-                  <p className="font-dancing text-lg text-dark-brown">You're Invited!</p>
-                  <p className="font-sans text-xs text-dark-brown/70 mt-1">10th Anniversary</p>
+                  <p className="font-dancing text-xl text-dark-brown mb-1">You're Invited!</p>
+                  <p className="font-sans text-sm text-dark-brown/70">10th Anniversary</p>
+                  <div className="w-12 h-0.5 bg-gold mx-auto mt-2"></div>
                 </div>
               </div>
 
-              {/* Envelope Flap */}
+              {/* Enhanced Envelope Flap */}
               <div 
-                className={`absolute top-0 left-0 w-full cursor-pointer transition-all duration-800 origin-top ${
-                  flapOpened ? 'transform rotate-12 translate-y-2' : ''
-                }`}
-                onClick={handleFlapClick}
+                className="absolute top-0 left-0 w-full transition-all duration-500 origin-top"
                 style={{
-                  clipPath: flapOpened 
-                    ? 'polygon(0 0, 100% 0, 85% 60%, 15% 60%)' 
-                    : 'polygon(0 0, 100% 0, 50% 70%)',
+                  transform: `rotate(${flapProgress * 0.15}deg) translateY(${flapProgress * 0.03}px)`,
+                  clipPath: flapProgress > 50 
+                    ? 'polygon(0 0, 100% 0, 85% 65%, 15% 65%)' 
+                    : 'polygon(0 0, 100% 0, 50% 75%)',
                 }}
               >
-                <div className="w-full h-32 bg-gradient-to-b from-warm-cream via-ivory to-gold/20 shadow-lg border-b border-gold/30">
-                  {/* Flap texture */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
+                <div className="w-full h-36 bg-gradient-to-b from-warm-cream via-ivory to-gold/30 shadow-lg border-b border-gold/40 relative">
+                  {/* Flap texture and depth */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent"></div>
                   
-                  {/* Flap crease line */}
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gold/30"></div>
-                </div>
-              </div>
-
-              {/* Instruction */}
-              {isFlipped && !flapOpened && (
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md animate-pulse">
-                    <p className="text-sm text-dark-brown/80 italic text-center">
-                      Lift the flap to open
-                    </p>
+                  {/* Flap edge highlight */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-gold/20 via-gold/40 to-gold/20"></div>
+                  
+                  {/* Flap crease lines for realism */}
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-4 left-4 right-4 h-px bg-gold/30"></div>
+                    <div className="absolute top-8 left-8 right-8 h-px bg-gold/20"></div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
@@ -172,6 +210,29 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        .slider-thumb::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: pointer;
+        }
+        
+        .slider-thumb::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: pointer;
+        }
+      `}</style>
     </div>
   );
 };
