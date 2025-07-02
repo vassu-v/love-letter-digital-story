@@ -13,6 +13,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   const [showInvite, setShowInvite] = useState(false);
   const [flipProgress, setFlipProgress] = useState(0);
   const [flapProgress, setFlapProgress] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleFlipSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -44,7 +45,10 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         setTimeout(() => {
           setShowInvite(true);
           setTimeout(() => {
-            onCardOpen();
+            setIsTransitioning(true);
+            setTimeout(() => {
+              onCardOpen();
+            }, 1000);
           }, 2000);
         }, 800);
       }, 300);
@@ -56,7 +60,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-warm-cream to-ivory p-4 relative overflow-hidden">
+    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-warm-cream to-ivory p-4 relative overflow-hidden transition-all duration-1000 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
       {/* Background decorative elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-10 w-2 h-2 bg-gold/30 rounded-full animate-float"></div>
@@ -73,15 +77,15 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         </div>
       </div>
 
-      {/* Flip Control - Bottom Center */}
+      {/* Flip Control - Bottom Center (Smaller) */}
       <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 transition-all duration-500 ${flipProgress >= 100 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-              <ArrowRight className="w-6 h-6 text-white" />
+        <div className="bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-xl border border-gold/20">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
+              <ArrowRight className="w-4 h-4 text-white" />
             </div>
-            <div className="relative w-48">
-              <div className="h-4 bg-gold/20 rounded-full overflow-hidden">
+            <div className="relative w-32">
+              <div className="h-3 bg-gold/20 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-gold to-soft-gold transition-all duration-300 rounded-full"
                   style={{ width: `${flipProgress}%` }}
@@ -93,29 +97,29 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 max="100"
                 value={flipProgress}
                 onChange={handleFlipSliderChange}
-                className="absolute inset-0 w-full h-4 opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-3 opacity-0 cursor-pointer"
               />
               <div 
-                className="absolute top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-3 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
-                style={{ left: `calc(${flipProgress}% - 12px)` }}
+                className="absolute top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
+                style={{ left: `calc(${flipProgress}% - 10px)` }}
               ></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Flap Control - Right Side Vertical */}
+      {/* Flap Control - Right Side Vertical (Fixed) */}
       {isFlipped && (
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30 animate-fade-in">
-          <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-                <ArrowDown className="w-6 h-6 text-white" />
+          <div className="bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-xl border border-gold/20">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
+                <ArrowDown className="w-4 h-4 text-white" />
               </div>
-              <div className="relative h-48">
-                <div className="w-4 h-full bg-gold/20 rounded-full overflow-hidden">
+              <div className="relative h-32 w-3">
+                <div className="w-full h-full bg-gold/20 rounded-full overflow-hidden">
                   <div 
-                    className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full"
+                    className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full absolute bottom-0"
                     style={{ height: `${flapProgress}%` }}
                   ></div>
                 </div>
@@ -125,12 +129,11 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   max="100"
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
-                  className="absolute inset-0 w-4 h-full opacity-0 cursor-pointer vertical-slider"
-                  orient="vertical"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer vertical-range"
                 />
                 <div 
-                  className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-3 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
-                  style={{ bottom: `calc(${flapProgress}% - 12px)` }}
+                  className="absolute left-1/2 transform -translate-x-1/2 w-5 h-5 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
+                  style={{ bottom: `calc(${flapProgress}% - 10px)` }}
                 ></div>
               </div>
             </div>
@@ -140,6 +143,9 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
 
       {/* Envelope Container */}
       <div className="relative w-[480px] h-[320px] perspective-1000">
+        {/* Paper Background (Hidden behind envelope) */}
+        <div className="absolute inset-0 w-full h-full bg-white rounded-lg shadow-lg transform translate-z-[-10px] opacity-90"></div>
+        
         {/* Envelope */}
         <div 
           className="relative w-full h-full transition-transform duration-300 transform-style-preserve-3d"
@@ -155,47 +161,61 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               
               {/* Envelope edges and seams */}
               <div className="absolute inset-2 border border-gold/10 rounded-md"></div>
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold/20 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold/20 to-transparent"></div>
-              <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-transparent via-gold/20 to-transparent"></div>
-              <div className="absolute right-0 top-0 w-1 h-full bg-gradient-to-b from-transparent via-gold/20 to-transparent"></div>
               
               {/* Postmark */}
-              <div className="absolute top-6 left-6 w-20 h-20 border-2 border-gold/40 rounded-full flex items-center justify-center">
+              <div className="absolute top-4 left-4 w-16 h-16 border-2 border-red-400/60 rounded-full flex items-center justify-center transform -rotate-12">
                 <div className="text-center">
-                  <div className="text-xs font-bold text-gold/60">LOVE</div>
-                  <div className="text-xs text-gold/60">2024</div>
+                  <div className="text-xs font-bold text-red-500/70">LOVE</div>
+                  <div className="text-xs text-red-500/70">2024</div>
                 </div>
               </div>
               
-              {/* Stamp */}
-              <div className="absolute top-6 right-6 w-20 h-24 bg-gradient-to-br from-gold to-soft-gold rounded-sm border-2 border-gold/50 flex items-center justify-center shadow-md transform rotate-2">
-                <div className="text-center text-white">
-                  <Heart className="w-8 h-8 mx-auto mb-1" />
-                  <div className="text-xs font-bold">FOREVER</div>
-                </div>
-              </div>
-
-              {/* Address section */}
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-12">
-                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-gold/20">
-                  <div className="mb-6">
-                    <p className="font-dancing text-2xl text-gold mb-2">To Our Beloved</p>
-                    <p className="font-playfair text-3xl text-dark-brown capitalize font-bold">{guestName}</p>
+              {/* Realistic Photo Stamp */}
+              <div className="absolute top-4 right-4 w-16 h-20 bg-white rounded-sm border border-gray-300 shadow-md transform rotate-3 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-rose-200 via-pink-100 to-rose-300 relative">
+                  {/* Stamp perforations */}
+                  <div className="absolute inset-0 border-2 border-dashed border-gray-400/30"></div>
+                  
+                  {/* Heart couple silhouette */}
+                  <div className="absolute inset-2 flex items-center justify-center">
+                    <div className="relative">
+                      <Heart className="w-8 h-8 text-rose-600 fill-current" />
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-rose-700">♥</div>
+                    </div>
                   </div>
                   
-                  <div className="border-t border-gold/30 pt-4">
-                    <p className="font-dancing text-xl text-gold mb-1">With Love From</p>
-                    <p className="font-playfair text-2xl text-dark-brown font-semibold">Aarav & Riya</p>
+                  {/* Stamp value */}
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-rose-700">
+                    LOVE
                   </div>
                 </div>
               </div>
 
-              {/* Envelope corner details */}
-              <div className="absolute top-0 left-0 w-8 h-8 border-r border-b border-gold/20"></div>
-              <div className="absolute top-0 right-0 w-8 h-8 border-l border-b border-gold/20"></div>
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-r border-t border-gold/20"></div>
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-l border-t border-gold/20"></div>
+              {/* Address section - Proper envelope format */}
+              <div className="absolute left-8 top-20 right-8 bottom-8">
+                <div className="h-full flex flex-col justify-center">
+                  {/* Return address (top left) */}
+                  <div className="absolute top-0 left-0 text-xs text-dark-brown/70">
+                    <div className="font-playfair">Aarav & Riya</div>
+                    <div>123 Love Lane</div>
+                    <div>Heart City, HC 12345</div>
+                  </div>
+                  
+                  {/* Main address (center) */}
+                  <div className="text-center">
+                    <div className="mb-4">
+                      <p className="font-dancing text-xl text-gold mb-1">To Our Beloved</p>
+                      <p className="font-playfair text-2xl text-dark-brown capitalize font-bold">{guestName}</p>
+                    </div>
+                    
+                    <div className="font-sans text-sm text-dark-brown/80 leading-relaxed">
+                      <div>123 Celebration Street</div>
+                      <div>Joy Avenue</div>
+                      <div>Happiness City, HC 54321</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -206,11 +226,14 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               {/* Inner envelope texture */}
               <div className="absolute inset-3 bg-gradient-to-br from-white/40 to-ivory/60 rounded-md border border-gold/10"></div>
               
+              {/* Paper background inside envelope */}
+              <div className="absolute inset-6 bg-white rounded-sm shadow-inner border border-gold/10"></div>
+              
               {/* Letter inside (visible when flap opens) */}
-              <div className={`absolute inset-8 bg-white rounded-sm shadow-inner border border-gold/20 transition-all duration-800 ${
-                letterPulled ? 'transform -translate-y-8 scale-110 shadow-2xl rotate-1' : 'transform translate-y-0'
+              <div className={`absolute inset-8 bg-white rounded-sm shadow-lg border border-gold/20 transition-all duration-800 ${
+                letterPulled ? 'transform -translate-y-8 scale-110 shadow-2xl rotate-1 z-20' : 'transform translate-y-0 z-10'
               }`}>
-                <div className="p-6 text-center h-full flex flex-col justify-center">
+                <div className="p-6 text-center h-full flex flex-col justify-center bg-gradient-to-br from-white to-warm-cream/20 rounded-sm">
                   <div className="mb-4">
                     <Heart className="w-8 h-8 text-gold mx-auto mb-3 animate-pulse" />
                   </div>
@@ -224,7 +247,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
 
               {/* Realistic Envelope Flap */}
               <div 
-                className="absolute top-0 left-0 w-full transition-all duration-500 origin-top z-10"
+                className="absolute top-0 left-0 w-full transition-all duration-500 origin-top z-30"
                 style={{
                   transform: `rotateX(${flapProgress * 1.5}deg)`,
                   clipPath: 'polygon(0 0, 100% 0, 50% 75%)',
@@ -236,13 +259,6 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   
                   {/* Flap center crease */}
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-full bg-gold/20"></div>
-                  
-                  {/* Flap edge highlight */}
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-gold/20 via-gold/40 to-gold/20"></div>
-                  
-                  {/* Flap corner details */}
-                  <div className="absolute top-2 left-2 w-4 h-4 border-r border-b border-gold/20"></div>
-                  <div className="absolute top-2 right-2 w-4 h-4 border-l border-b border-gold/20"></div>
                   
                   {/* Wax seal area */}
                   <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-deep-gold to-gold rounded-full border-2 border-gold/60 flex items-center justify-center shadow-lg">
@@ -256,7 +272,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
 
         {/* Full Invite Message */}
         {showInvite && (
-          <div className="absolute inset-0 flex items-center justify-center animate-fade-in-up z-20">
+          <div className="absolute inset-0 flex items-center justify-center animate-fade-in-up z-40">
             <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 text-center border border-gold/20 transform animate-scale-in max-w-sm">
               <div className="mb-6">
                 <Heart className="w-8 h-8 text-gold mx-auto mb-3 animate-pulse" />
@@ -283,9 +299,34 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       </div>
 
       <style>{`
-        .vertical-slider {
-          writing-mode: bt-lr; /* IE */
-          -webkit-appearance: slider-vertical; /* WebKit */
+        .vertical-range {
+          writing-mode: bt-lr;
+          -webkit-appearance: slider-vertical;
+          width: 12px !important;
+          height: 128px !important;
+          background: transparent;
+          outline: none;
+        }
+        
+        .vertical-range::-webkit-slider-thumb {
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: pointer;
+        }
+        
+        .vertical-range::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: pointer;
         }
       `}</style>
     </div>
