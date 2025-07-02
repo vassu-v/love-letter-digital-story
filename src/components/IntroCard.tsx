@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Heart, Feather } from 'lucide-react';
+import { Heart, ArrowRight, ArrowDown } from 'lucide-react';
 
 interface IntroCardProps {
   guestName?: string;
@@ -66,32 +66,37 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       </div>
 
       {/* Controls */}
-      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30 space-y-4">
-        {/* Flip Slider */}
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30 flex items-start gap-6">
+        {/* Flip Slider - Horizontal */}
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gold/20">
-          <p className="text-sm text-dark-brown font-medium mb-2 text-center">💌 Slide to flip the card</p>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={flipProgress}
-            onChange={handleFlipSliderChange}
-            className="w-48 h-2 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb"
-          />
-        </div>
-
-        {/* Flap Slider - Only show when flipped */}
-        {isFlipped && (
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gold/20 animate-fade-in">
-            <p className="text-sm text-dark-brown font-medium mb-2 text-center">📂 Slide to lift the flap</p>
+          <div className="flex items-center gap-3">
+            <ArrowRight className="w-4 h-4 text-gold" />
             <input
               type="range"
               min="0"
               max="100"
-              value={flapProgress}
-              onChange={handleFlapSliderChange}
-              className="w-48 h-2 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb"
+              value={flipProgress}
+              onChange={handleFlipSliderChange}
+              className="w-32 h-2 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb"
             />
+          </div>
+        </div>
+
+        {/* Flap Slider - Vertical (Only show when flipped) */}
+        {isFlipped && (
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gold/20 animate-fade-in">
+            <div className="flex flex-col items-center gap-3">
+              <ArrowDown className="w-4 h-4 text-gold" />
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={flapProgress}
+                onChange={handleFlapSliderChange}
+                className="w-2 h-32 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb-vertical"
+                style={{ writingMode: 'vertical-lr' }}
+              />
+            </div>
           </div>
         )}
       </div>
@@ -155,14 +160,12 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 </div>
               </div>
 
-              {/* Enhanced Envelope Flap */}
+              {/* Enhanced Envelope Flap - Fixed to flip instead of rotate */}
               <div 
                 className="absolute top-0 left-0 w-full transition-all duration-500 origin-top"
                 style={{
-                  transform: `rotate(${flapProgress * 0.15}deg) translateY(${flapProgress * 0.03}px)`,
-                  clipPath: flapProgress > 50 
-                    ? 'polygon(0 0, 100% 0, 85% 65%, 15% 65%)' 
-                    : 'polygon(0 0, 100% 0, 50% 75%)',
+                  transform: `rotateX(${flapProgress * 1.5}deg)`,
+                  clipPath: 'polygon(0 0, 100% 0, 50% 75%)',
                 }}
               >
                 <div className="w-full h-36 bg-gradient-to-b from-warm-cream via-ivory to-gold/30 shadow-lg border-b border-gold/40 relative">
@@ -211,7 +214,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .slider-thumb::-webkit-slider-thumb {
           appearance: none;
           height: 20px;
@@ -224,6 +227,27 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         }
         
         .slider-thumb::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: pointer;
+        }
+
+        .slider-thumb-vertical::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: pointer;
+        }
+        
+        .slider-thumb-vertical::-moz-range-thumb {
           height: 20px;
           width: 20px;
           border-radius: 50%;
