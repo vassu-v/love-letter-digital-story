@@ -15,43 +15,78 @@ const PigeonHero: React.FC<PigeonHeroProps> = ({
 }) => {
   const [showPigeon, setShowPigeon] = useState(false);
   const [showContent, setShowContent] = useState(false);
-  const [pigeonFlown, setPigeonFlown] = useState(false);
+  const [pigeonPhase, setPigeonPhase] = useState(0);
 
   useEffect(() => {
-    // Sequence of animations
+    // Enhanced pigeon animation sequence
     const timer1 = setTimeout(() => setShowPigeon(true), 500);
-    const timer2 = setTimeout(() => setPigeonFlown(true), 1000);
-    const timer3 = setTimeout(() => setShowContent(true), 3000);
+    const timer2 = setTimeout(() => setPigeonPhase(1), 1200); // Flying across
+    const timer3 = setTimeout(() => setPigeonPhase(2), 2500); // Circling
+    const timer4 = setTimeout(() => setPigeonPhase(3), 4000); // Final position
+    const timer5 = setTimeout(() => setShowContent(true), 4500);
     
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(timer4);
+      clearTimeout(timer5);
     };
   }, []);
 
+  const getPigeonStyle = () => {
+    switch (pigeonPhase) {
+      case 0:
+        return 'top-1/2 -left-20 transform -translate-y-1/2 opacity-0 scale-75';
+      case 1:
+        return 'top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-100 scale-100';
+      case 2:
+        return 'top-1/4 right-1/4 transform opacity-90 scale-90';
+      case 3:
+        return 'top-16 right-16 transform scale-75 opacity-70';
+      default:
+        return 'top-1/2 -left-20 transform -translate-y-1/2 opacity-0';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-rose-50 relative overflow-hidden flex items-center justify-center">
-      {/* Sky Background with Clouds */}
+      {/* Enhanced Sky Background with Multiple Cloud Layers */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-16 h-8 bg-white/40 rounded-full blur-sm animate-float"></div>
         <div className="absolute top-32 right-20 w-20 h-10 bg-white/30 rounded-full blur-sm animate-float" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-40 left-1/2 w-24 h-12 bg-white/20 rounded-full blur-sm animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-60 left-1/4 w-18 h-9 bg-white/25 rounded-full blur-sm animate-float" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-40 right-1/3 w-22 h-11 bg-white/35 rounded-full blur-sm animate-float" style={{ animationDelay: '3s' }}></div>
       </div>
 
-      {/* Pigeon Animation */}
+      {/* Enhanced Pigeon Animation */}
       {showPigeon && (
-        <div className={`absolute transition-all duration-3000 ${
-          pigeonFlown 
-            ? 'top-16 right-16 transform scale-75 opacity-60' 
-            : 'top-1/2 left-1/4 transform -translate-y-1/2'
-        }`}>
-          <div className="text-4xl animate-float">🕊️</div>
-          {/* Mini invite card that pigeon carries */}
-          <div className={`absolute -bottom-2 -right-2 w-8 h-6 bg-ivory border border-gold/30 rounded-sm text-xs flex items-center justify-center transition-all duration-1000 ${
-            pigeonFlown ? 'opacity-0 scale-0' : 'opacity-100 scale-100'
-          }`}>
-            <Heart className="w-2 h-2 text-gold" />
+        <div className={`absolute transition-all duration-1000 ease-in-out ${getPigeonStyle()}`}>
+          <div className="relative">
+            {/* Pigeon with wing flapping animation */}
+            <div className="text-4xl animate-bounce" style={{ animationDuration: '0.8s' }}>
+              🕊️
+            </div>
+            
+            {/* Flight trail effect */}
+            {pigeonPhase === 1 && (
+              <div className="absolute -left-8 top-1/2 w-16 h-1 bg-gradient-to-r from-white/60 to-transparent rounded animate-pulse"></div>
+            )}
+            
+            {/* Mini invite card that pigeon delivers */}
+            <div className={`absolute -bottom-3 -right-3 w-10 h-7 bg-ivory border border-gold/30 rounded-sm text-xs flex items-center justify-center shadow-lg transition-all duration-1000 ${
+              pigeonPhase >= 3 ? 'opacity-100 scale-100 animate-pulse' : 'opacity-80 scale-90'
+            }`}>
+              <Heart className="w-3 h-3 text-gold animate-pulse" />
+            </div>
+
+            {/* Delivery message */}
+            {pigeonPhase >= 3 && (
+              <div className="absolute -left-20 -top-8 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1 text-xs text-dark-brown border border-gold/20 animate-fade-in">
+                Special Delivery! 💌
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -92,7 +127,7 @@ const PigeonHero: React.FC<PigeonHeroProps> = ({
           onClick={onScrollToNext}
         >
           <p className="font-sans text-sm text-dark-brown/70 mb-2 group-hover:text-dark-brown transition-colors">
-            Discover Our Story
+            Discover Our Journey
           </p>
           <div className="animate-bounce">
             <ArrowDown className="w-6 h-6 text-rose-400" />

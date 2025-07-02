@@ -7,8 +7,9 @@ import StoryTimeline from '@/components/StoryTimeline';
 import ThenAndNow from '@/components/ThenAndNow';
 import FamilyQuotes from '@/components/FamilyQuotes';
 import EventDetails from '@/components/EventDetails';
+import WishesSection from '@/components/WishesSection';
 import PhotoGallery from '@/components/PhotoGallery';
-import RSVPForm from '@/components/RSVPForm';
+import SimpleRSVP from '@/components/SimpleRSVP';
 
 const Index = () => {
   const [searchParams] = useSearchParams();
@@ -49,7 +50,7 @@ const Index = () => {
             onScrollToNext={handleScrollToNext}
           />
 
-          {/* Story Timeline */}
+          {/* Story Timeline (Merged with Memory Lane) */}
           <div id="story">
             <StoryTimeline />
           </div>
@@ -63,11 +64,14 @@ const Index = () => {
           {/* Event Details */}
           <EventDetails />
 
+          {/* Wishes Section (Moved from heart section) */}
+          <WishesSection coupleNames="Aarav & Riya" />
+
           {/* Photo Gallery */}
           <PhotoGallery />
 
-          {/* RSVP Form */}
-          <RSVPForm />
+          {/* Simple RSVP */}
+          <SimpleRSVP />
 
           {/* Footer */}
           <footer className="bg-dark-brown text-white py-12">
