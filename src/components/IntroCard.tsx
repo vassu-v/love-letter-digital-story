@@ -9,8 +9,9 @@ interface IntroCardProps {
 
 const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [sealClicked, setSealClicked] = useState(false);
-  const [envelopeOpened, setEnvelopeOpened] = useState(false);
+  const [flapOpened, setFlapOpened] = useState(false);
+  const [letterPulled, setLetterPulled] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
 
   const handleCardClick = () => {
     if (!isFlipped) {
@@ -18,16 +19,20 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     }
   };
 
-  const handleSealClick = (e: React.MouseEvent) => {
+  const handleFlapClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isFlipped && !sealClicked) {
-      setSealClicked(true);
+    if (isFlipped && !flapOpened) {
+      setFlapOpened(true);
+      // After flap opens, show the letter peek
       setTimeout(() => {
-        setEnvelopeOpened(true);
+        setLetterPulled(true);
         setTimeout(() => {
-          onCardOpen();
-        }, 1500);
-      }, 800);
+          setShowInvite(true);
+          setTimeout(() => {
+            onCardOpen();
+          }, 2000);
+        }, 800);
+      }, 600);
     }
   };
 
@@ -46,7 +51,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         <div 
           className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
             isFlipped ? 'rotate-y-180' : ''
-          } ${envelopeOpened ? 'animate-envelope-open' : ''}`}
+          }`}
           onClick={handleCardClick}
         >
           {/* Front Side - Envelope */}
@@ -55,8 +60,11 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               {/* Envelope design */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-ivory/80"></div>
               
+              {/* Envelope lines */}
+              <div className="absolute inset-4 border-l-2 border-t-2 border-gold/10"></div>
+              
               {/* Stamp */}
-              <div className="absolute top-4 right-4 w-16 h-20 bg-gradient-to-br from-gold to-soft-gold rounded border-2 border-gold/50 flex items-center justify-center">
+              <div className="absolute top-4 right-4 w-16 h-20 bg-gradient-to-br from-gold to-soft-gold rounded border-2 border-gold/50 flex items-center justify-center shadow-md">
                 <Heart className="w-6 h-6 text-white" />
               </div>
 
@@ -82,57 +90,84 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
             </div>
           </div>
 
-          {/* Back Side - Wax Seal */}
+          {/* Back Side - Envelope with Flap */}
           <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180">
-            <div className="w-full h-full bg-gradient-to-br from-warm-cream to-ivory rounded-lg shadow-2xl border border-gold/30 relative flex items-center justify-center">
-              {/* Decorative pattern */}
-              <div className="absolute inset-4 border border-gold/20 rounded-lg"></div>
-              <div className="absolute inset-6 border border-gold/10 rounded-lg"></div>
+            {/* Envelope Body */}
+            <div className="w-full h-full bg-gradient-to-br from-warm-cream to-ivory rounded-lg shadow-2xl border border-gold/30 relative">
+              {/* Inner envelope shadow */}
+              <div className="absolute inset-2 bg-gradient-to-br from-white/40 to-ivory/60 rounded-md"></div>
               
-              {/* Wax Seal */}
-              <div 
-                className={`relative cursor-pointer transition-all duration-500 hover:scale-105 ${
-                  sealClicked ? 'animate-seal-crack' : 'animate-float'
-                }`}
-                onClick={handleSealClick}
-              >
-                <div className="w-24 h-24 bg-gradient-radial from-gold via-deep-gold to-gold rounded-full shadow-2xl flex items-center justify-center relative">
-                  {/* Seal crack effect */}
-                  {sealClicked && (
-                    <div className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-br from-transparent via-black/20 to-black/40 animate-crack"></div>
-                  )}
-                  
-                  {/* Initials */}
-                  <div className="text-ivory font-playfair text-xl font-bold">A+R</div>
+              {/* Letter inside (visible when flap opens) */}
+              <div className={`absolute inset-6 bg-white rounded-sm shadow-inner border border-gold/20 transition-all duration-1000 ${
+                letterPulled ? 'transform -translate-y-4 scale-105' : 'transform translate-y-0'
+              }`}>
+                <div className="p-4 text-center">
+                  <div className="mb-2">
+                    <Heart className="w-4 h-4 text-gold mx-auto" />
+                  </div>
+                  <p className="font-dancing text-lg text-dark-brown">You're Invited!</p>
+                  <p className="font-sans text-xs text-dark-brown/70 mt-1">10th Anniversary</p>
                 </div>
-                
-                {/* Wax drip */}
-                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-12 h-6 bg-gradient-to-b from-gold/80 to-transparent rounded-b-full"></div>
+              </div>
+
+              {/* Envelope Flap */}
+              <div 
+                className={`absolute top-0 left-0 w-full cursor-pointer transition-all duration-800 origin-top ${
+                  flapOpened ? 'transform rotate-12 translate-y-2' : ''
+                }`}
+                onClick={handleFlapClick}
+                style={{
+                  clipPath: flapOpened 
+                    ? 'polygon(0 0, 100% 0, 85% 60%, 15% 60%)' 
+                    : 'polygon(0 0, 100% 0, 50% 70%)',
+                }}
+              >
+                <div className="w-full h-32 bg-gradient-to-b from-warm-cream via-ivory to-gold/20 shadow-lg border-b border-gold/30">
+                  {/* Flap texture */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent"></div>
+                  
+                  {/* Flap crease line */}
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gold/30"></div>
+                </div>
               </div>
 
               {/* Instruction */}
-              {isFlipped && !sealClicked && (
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-                  <p className="text-sm text-dark-brown/70 italic text-center animate-fade-in">
-                    Tap the seal to open
-                  </p>
+              {isFlipped && !flapOpened && (
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md animate-pulse">
+                    <p className="text-sm text-dark-brown/80 italic text-center">
+                      Lift the flap to open
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Invite Message */}
-        {envelopeOpened && (
-          <div className="absolute inset-0 flex items-center justify-center animate-fade-in-up">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-8 text-center border border-gold/20 transform scale-95 animate-scale-in">
-              <div className="mb-4">
-                <Heart className="w-8 h-8 text-gold mx-auto mb-2" />
-                <h2 className="font-playfair text-2xl text-dark-brown mb-2">You're Invited!</h2>
-                <p className="font-dancing text-xl text-gold">to our</p>
-                <p className="font-playfair text-lg text-dark-brown">10th Anniversary Celebration</p>
+        {/* Full Invite Message */}
+        {showInvite && (
+          <div className="absolute inset-0 flex items-center justify-center animate-fade-in-up z-20">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 text-center border border-gold/20 transform animate-scale-in max-w-sm">
+              <div className="mb-6">
+                <Heart className="w-8 h-8 text-gold mx-auto mb-3 animate-pulse" />
+                <h2 className="font-playfair text-3xl text-dark-brown mb-3">You're Invited!</h2>
+                <p className="font-dancing text-2xl text-gold mb-2">to our</p>
+                <p className="font-playfair text-xl text-dark-brown">10th Anniversary Celebration</p>
               </div>
-              <div className="w-16 h-0.5 bg-gold mx-auto"></div>
+              
+              <div className="mb-4">
+                <div className="w-16 h-0.5 bg-gold mx-auto mb-4"></div>
+                <p className="font-sans text-sm text-dark-brown/70">
+                  A decade of love, laughter, and memories
+                </p>
+              </div>
+
+              <div className="flex items-center justify-center gap-2 text-gold">
+                <div className="w-2 h-2 bg-gold rounded-full animate-ping"></div>
+                <p className="font-sans text-xs">Opening your invitation...</p>
+                <div className="w-2 h-2 bg-gold rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+              </div>
             </div>
           </div>
         )}
