@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Heart, ArrowRight, ArrowDown } from 'lucide-react';
 
@@ -65,37 +64,59 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         <div className="absolute bottom-40 left-1/4 w-3 h-3 bg-gold/20 rounded-full animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
-      {/* Controls */}
-      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30 flex items-start gap-6">
-        {/* Flip Slider - Horizontal */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gold/20">
-          <div className="flex items-center gap-3">
-            <ArrowRight className="w-4 h-4 text-gold" />
+      {/* Instructions */}
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-gold/20 text-center">
+          <p className="font-playfair text-dark-brown text-sm">
+            Use the controls below to open your invitation
+          </p>
+        </div>
+      </div>
+
+      {/* Controls Container */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 flex flex-col items-center gap-4">
+        {/* Flip Control */}
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gold/20 min-w-80">
+          <div className="flex items-center gap-4 mb-3">
+            <ArrowRight className="w-5 h-5 text-gold flex-shrink-0" />
+            <span className="font-playfair text-dark-brown font-medium">Flip the envelope</span>
+          </div>
+          <div className="relative">
             <input
               type="range"
               min="0"
               max="100"
               value={flipProgress}
               onChange={handleFlipSliderChange}
-              className="w-32 h-2 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb"
+              className="w-full h-3 bg-gradient-to-r from-gold/20 to-gold/40 rounded-full appearance-none cursor-pointer slider-thumb-horizontal"
             />
+            <div className="flex justify-between text-xs text-dark-brown/60 mt-2">
+              <span>Front</span>
+              <span>Back</span>
+            </div>
           </div>
         </div>
 
-        {/* Flap Slider - Vertical (Only show when flipped) */}
+        {/* Flap Control - Only show when flipped */}
         {isFlipped && (
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-gold/20 animate-fade-in">
-            <div className="flex flex-col items-center gap-3">
-              <ArrowDown className="w-4 h-4 text-gold" />
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gold/20 min-w-80 animate-fade-in">
+            <div className="flex items-center gap-4 mb-3">
+              <ArrowDown className="w-5 h-5 text-gold flex-shrink-0" />
+              <span className="font-playfair text-dark-brown font-medium">Open the flap</span>
+            </div>
+            <div className="relative">
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={flapProgress}
                 onChange={handleFlapSliderChange}
-                className="w-2 h-32 bg-gold/20 rounded-lg appearance-none cursor-pointer slider-thumb-vertical"
-                style={{ writingMode: 'vertical-lr' }}
+                className="w-full h-3 bg-gradient-to-r from-gold/20 to-gold/40 rounded-full appearance-none cursor-pointer slider-thumb-horizontal"
               />
+              <div className="flex justify-between text-xs text-dark-brown/60 mt-2">
+                <span>Closed</span>
+                <span>Open</span>
+              </div>
             </div>
           </div>
         )}
@@ -160,7 +181,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 </div>
               </div>
 
-              {/* Enhanced Envelope Flap - Fixed to flip instead of rotate */}
+              {/* Enhanced Envelope Flap */}
               <div 
                 className="absolute top-0 left-0 w-full transition-all duration-500 origin-top"
                 style={{
@@ -215,46 +236,50 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       </div>
 
       <style>{`
-        .slider-thumb::-webkit-slider-thumb {
+        .slider-thumb-horizontal::-webkit-slider-thumb {
           appearance: none;
-          height: 20px;
-          width: 20px;
+          height: 24px;
+          width: 24px;
           border-radius: 50%;
-          background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          background: linear-gradient(135deg, #C8A97E 0%, #D4A574 50%, #B76E79 100%);
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(200, 169, 126, 0.4), 0 2px 4px rgba(0,0,0,0.1);
           cursor: pointer;
+          transition: all 0.2s ease;
         }
         
-        .slider-thumb::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
+        .slider-thumb-horizontal::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px rgba(200, 169, 126, 0.6), 0 3px 6px rgba(0,0,0,0.15);
+        }
+        
+        .slider-thumb-horizontal::-moz-range-thumb {
+          height: 24px;
+          width: 24px;
           border-radius: 50%;
-          background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          background: linear-gradient(135deg, #C8A97E 0%, #D4A574 50%, #B76E79 100%);
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(200, 169, 126, 0.4), 0 2px 4px rgba(0,0,0,0.1);
           cursor: pointer;
+          transition: all 0.2s ease;
         }
 
-        .slider-thumb-vertical::-webkit-slider-thumb {
-          appearance: none;
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-          cursor: pointer;
+        .slider-thumb-horizontal::-moz-range-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px rgba(200, 169, 126, 0.6), 0 3px 6px rgba(0,0,0,0.15);
         }
-        
-        .slider-thumb-vertical::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-          cursor: pointer;
+
+        .slider-thumb-horizontal::-webkit-slider-track {
+          height: 12px;
+          border-radius: 6px;
+          background: linear-gradient(to right, rgba(200, 169, 126, 0.2), rgba(200, 169, 126, 0.4));
+        }
+
+        .slider-thumb-horizontal::-moz-range-track {
+          height: 12px;
+          border-radius: 6px;
+          background: linear-gradient(to right, rgba(200, 169, 126, 0.2), rgba(200, 169, 126, 0.4));
+          border: none;
         }
       `}</style>
     </div>
