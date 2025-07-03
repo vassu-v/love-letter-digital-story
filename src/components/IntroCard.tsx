@@ -215,28 +215,19 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 </div>
               </div>
 
-              {/* Address section - Proper envelope format */}
-              <div className="absolute left-8 top-20 right-8 bottom-8">
-                <div className="h-full flex flex-col justify-center">
-                  {/* Return address (top left) */}
-                  <div className="absolute top-0 left-0 text-xs text-dark-brown/70">
-                    <div className="font-playfair">Aarav & Riya</div>
-                    <div>123 Love Lane</div>
-                    <div>Heart City, HC 12345</div>
+              {/* Centered Content - Just Names */}
+              <div className="absolute inset-8 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="mb-6">
+                    <p className="font-dancing text-3xl text-gold mb-3">To Our Beloved</p>
+                    <p className="font-playfair text-4xl text-dark-brown capitalize font-bold leading-tight">{guestName}</p>
                   </div>
                   
-                  {/* Main address (center) */}
-                  <div className="text-center">
-                    <div className="mb-4">
-                      <p className="font-dancing text-xl text-gold mb-1">To Our Beloved</p>
-                      <p className="font-playfair text-2xl text-dark-brown capitalize font-bold">{guestName}</p>
-                    </div>
-                    
-                    <div className="font-sans text-sm text-dark-brown/80 leading-relaxed">
-                      <div>123 Celebration Street</div>
-                      <div>Joy Avenue</div>
-                      <div>Happiness City, HC 54321</div>
-                    </div>
+                  <div className="w-24 h-0.5 bg-gold mx-auto mb-6"></div>
+                  
+                  <div className="mb-4">
+                    <p className="font-dancing text-2xl text-gold mb-2">From</p>
+                    <p className="font-playfair text-3xl text-dark-brown font-bold">Aarav & Riya</p>
                   </div>
                 </div>
               </div>
