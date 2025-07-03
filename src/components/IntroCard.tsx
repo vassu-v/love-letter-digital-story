@@ -185,7 +185,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               </div>
 
               {/* Address section - Proper envelope format */}
-              <div className="absolute left-40 top-20 right-8 bottom-8">
+              <div className="absolute left-8 top-20 right-8 bottom-8">
                 <div className="h-full flex flex-col justify-center">
                   {/* Return address (top left) */}
                   <div className="absolute top-0 left-0 text-xs text-dark-brown/70">
