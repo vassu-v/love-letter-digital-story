@@ -58,8 +58,6 @@ const Index = () => {
           {/* Then & Now */}
           <ThenAndNow />
 
-          {/* Family Quotes */}
-          <FamilyQuotes />
 
           {/* Event Details */}
           <EventDetails />
@@ -67,8 +65,6 @@ const Index = () => {
           {/* Wishes Section (Moved from heart section) */}
           <WishesSection coupleNames="Aarav & Riya" />
 
-          {/* Photo Gallery */}
-          <PhotoGallery />
 
           {/* Simple RSVP */}
           <SimpleRSVP />
