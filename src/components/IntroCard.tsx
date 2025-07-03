@@ -190,10 +190,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   {/* Return address (top left) */}
                   <div className="absolute top-0 left-0 text-xs text-dark-brown/70">
                     <div className="font-playfair">Aarav & Riya</div>
-                    <div>123 Love Lane</div>
-                    <div>Heart City, HC 12345</div>
-                  </div>
-                  
+                  </div
                   {/* Main address (center) */}
                   <div className="text-center">
                     <div className="mb-4">
