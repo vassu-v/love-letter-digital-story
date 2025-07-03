@@ -68,14 +68,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         <div className="absolute bottom-40 left-1/4 w-3 h-3 bg-gold/20 rounded-full animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
-      {/* Instructions */}
-      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-gold/20 text-center">
-          <p className="font-playfair text-dark-brown text-sm">
-            Use the controls to open your invitation
-          </p>
-        </div>
-      </div>
+  
 
       {/* Flip Control - Bottom Center (Smaller) */}
       <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 transition-all duration-500 ${flipProgress >= 100 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
