@@ -19,7 +19,11 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     const value = parseInt(e.target.value);
     setFlipProgress(value);
     
-    if (value >= 100 && !isFlipped) {
+    // Auto-complete if close to end
+    if (value >= 85 && !isFlipped) {
+      setFlipProgress(100);
+      setIsFlipped(true);
+    } else if (value >= 100 && !isFlipped) {
       setIsFlipped(true);
     } else if (value < 100 && isFlipped) {
       setIsFlipped(false);
@@ -37,7 +41,24 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     const value = parseInt(e.target.value);
     setFlapProgress(value);
     
-    if (value >= 100 && !flapOpened) {
+    // Auto-complete if close to end
+    if (value >= 85 && !flapOpened) {
+      setFlapProgress(100);
+      setFlapOpened(true);
+      // After flap opens, show the letter peek
+      setTimeout(() => {
+        setLetterPulled(true);
+        setTimeout(() => {
+          setShowInvite(true);
+          setTimeout(() => {
+            setIsTransitioning(true);
+            setTimeout(() => {
+              onCardOpen();
+            }, 1000);
+          }, 2000);
+        }, 800);
+      }, 300);
+    } else if (value >= 100 && !flapOpened) {
       setFlapOpened(true);
       // After flap opens, show the letter peek
       setTimeout(() => {
@@ -68,17 +89,15 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         <div className="absolute bottom-40 left-1/4 w-3 h-3 bg-gold/20 rounded-full animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
-  
-
       {/* Flip Control - Bottom Center (Smaller) */}
       <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 transition-all duration-500 ${flipProgress >= 100 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <div className="bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-xl border border-gold/20">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-              <ArrowRight className="w-4 h-4 text-white" />
+        <div className="bg-white/95 backdrop-blur-sm rounded-full p-2 shadow-xl border border-gold/20">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
+              <ArrowRight className="w-3 h-3 text-white" />
             </div>
-            <div className="relative w-32">
-              <div className="h-3 bg-gold/20 rounded-full overflow-hidden">
+            <div className="relative w-24">
+              <div className="h-2 bg-gold/20 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-gold to-soft-gold transition-all duration-300 rounded-full"
                   style={{ width: `${flipProgress}%` }}
@@ -90,27 +109,27 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 max="100"
                 value={flipProgress}
                 onChange={handleFlipSliderChange}
-                className="absolute inset-0 w-full h-3 opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-2 opacity-0 cursor-pointer"
               />
               <div 
-                className="absolute top-1/2 transform -translate-y-1/2 w-5 h-5 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
-                style={{ left: `calc(${flipProgress}% - 10px)` }}
+                className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
+                style={{ left: `calc(${flipProgress}% - 8px)` }}
               ></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Flap Control - Right Side Vertical (Fixed) */}
+      {/* Flap Control - Right Side Vertical */}
       {isFlipped && (
-        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30 animate-fade-in">
-          <div className="bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-xl border border-gold/20">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-                <ArrowDown className="w-4 h-4 text-white" />
+        <div className="absolute right-6 top-1/2 transform -translate-y-1/2 z-30 animate-fade-in">
+          <div className="bg-white/95 backdrop-blur-sm rounded-full p-2 shadow-xl border border-gold/20">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
+                <ArrowDown className="w-3 h-3 text-white" />
               </div>
-              <div className="relative h-32 w-3">
-                <div className="w-full h-full bg-gold/20 rounded-full overflow-hidden">
+              <div className="relative h-24 w-2 flex flex-col">
+                <div className="w-full h-full bg-gold/20 rounded-full overflow-hidden relative">
                   <div 
                     className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full absolute bottom-0"
                     style={{ height: `${flapProgress}%` }}
@@ -122,11 +141,12 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   max="100"
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer vertical-range"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer vertical-slider"
+                  orient="vertical"
                 />
                 <div 
-                  className="absolute left-1/2 transform -translate-x-1/2 w-5 h-5 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
-                  style={{ bottom: `calc(${flapProgress}% - 10px)` }}
+                  className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer"
+                  style={{ bottom: `calc(${flapProgress}% - 8px)` }}
                 ></div>
               </div>
             </div>
@@ -165,21 +185,19 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               
               {/* Realistic Photo Stamp */}
               <div className="absolute top-4 right-4 w-16 h-20 bg-white rounded-sm border border-gray-300 shadow-md transform rotate-3 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-rose-200 via-pink-100 to-rose-300 relative">
+                <div className="w-full h-full relative">
+                  {/* Couple photo */}
+                  <img 
+                    src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=200&h=250&fit=crop&crop=faces"
+                    alt="Couple"
+                    className="w-full h-full object-cover"
+                  />
+                  
                   {/* Stamp perforations */}
                   <div className="absolute inset-0 border-2 border-dashed border-gray-400/30"></div>
                   
-                  {/* Heart couple silhouette */}
-                  <div className="absolute inset-2 flex items-center justify-center">
-                    <div className="relative">
-                      <Heart className="w-8 h-8 text-rose-600 fill-current" />
-                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-rose-700">♥</div>
-                      <img></img>
-                    </div>
-                  </div>
-                  
                   {/* Stamp value */}
-                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-rose-700">
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-white bg-black/50 px-1 rounded">
                     LOVE
                   </div>
                 </div>
@@ -192,6 +210,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   <div className="absolute top-0 left-0 text-xs text-dark-brown/70">
                     <div className="font-playfair text-2xl">Aarav & Riya</div>
                   </div>
+                  
                   {/* Main address (center) */}
                   <div className="text-center">
                     <div className="mb-4">
@@ -287,19 +306,21 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       </div>
 
       <style>{`
-        .vertical-range {
+        .vertical-slider {
           writing-mode: bt-lr;
           -webkit-appearance: slider-vertical;
-          width: 12px !important;
-          height: 128px !important;
+          width: 8px !important;
+          height: 96px !important;
           background: transparent;
           outline: none;
+          transform: rotate(-90deg);
+          transform-origin: center;
         }
         
-        .vertical-range::-webkit-slider-thumb {
+        .vertical-slider::-webkit-slider-thumb {
           appearance: none;
-          width: 20px;
-          height: 20px;
+          width: 16px;
+          height: 16px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
           border: 2px solid white;
@@ -307,9 +328,9 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           cursor: pointer;
         }
         
-        .vertical-range::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
+        .vertical-slider::-moz-range-thumb {
+          width: 16px;
+          height: 16px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
           border: 2px solid white;
