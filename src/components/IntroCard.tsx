@@ -198,10 +198,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                       <p className="font-playfair text-2xl text-dark-brown capitalize font-bold">{guestName}</p>
                     </div>
                     
-                    <div className="font-sans text-sm text-dark-brown/80 leading-relaxed">
-                      <div>123 Celebration Street</div>
-                      <div>Joy Avenue</div>
-                      <div>Happiness City, HC 54321</div>
+                    <div className="font-sans text-sm text-dark-brown/80 leading-relax">
                     </div>
                   </div>
                 </div>
