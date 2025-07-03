@@ -174,6 +174,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                     <div className="relative">
                       <Heart className="w-8 h-8 text-rose-600 fill-current" />
                       <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs font-bold text-rose-700">♥</div>
+                      <img></img>
                     </div>
                   </div>
                   
