@@ -57,22 +57,23 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     if (value >= 85 && !flapOpened) {
       setFlapProgress(100);
       setFlapOpened(true);
-      // After flap opens, show the letter peek
+      // Enhanced sequence with better timing
       setTimeout(() => {
         setLetterPulled(true);
         setTimeout(() => {
           setShowInvite(true);
+          // Longer delay before transition to let user read the invitation
           setTimeout(() => {
             setIsTransitioning(true);
             setTimeout(() => {
               onCardOpen();
-            }, 1000);
-          }, 2000);
-        }, 800);
-      }, 300);
+            }, 1500); // Smoother transition timing
+          }, 3000); // Give more time to read the invitation
+        }, 1000); // Letter animation time
+      }, 500); // Flap opening time
     } else if (value >= 100 && !flapOpened) {
       setFlapOpened(true);
-      // After flap opens, show the letter peek
+      // Same enhanced sequence
       setTimeout(() => {
         setLetterPulled(true);
         setTimeout(() => {
@@ -81,10 +82,10 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
             setIsTransitioning(true);
             setTimeout(() => {
               onCardOpen();
-            }, 1000);
-          }, 2000);
-        }, 800);
-      }, 300);
+            }, 1500);
+          }, 3000);
+        }, 1000);
+      }, 500);
     } else if (value < 100 && flapOpened) {
       setFlapOpened(false);
       setLetterPulled(false);
@@ -92,9 +93,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     }
   };
 
-  // Mouse/Touch event handlers for envelope drag
   const handleEnvelopeMouseDown = (e: React.MouseEvent) => {
-    if (isFlipped) return; // Only allow flip drag when not flipped
+    if (isFlipped) return; 
     
     setIsDragging(true);
     setDragType('flip');
@@ -107,7 +107,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   };
 
   const handleFlapMouseDown = (e: React.MouseEvent) => {
-    if (!isFlipped) return; // Only allow flap drag when flipped
+    if (!isFlipped) return; 
     
     setIsDragging(true);
     setDragType('flap');
@@ -127,16 +127,14 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     const deltaY = e.clientY - dragStartRef.current.y;
 
     if (dragType === 'flip') {
-      // Horizontal drag for flip
       const dragDistance = deltaX;
-      const maxDrag = 200; // pixels
+      const maxDrag = 200; 
       const progressDelta = (dragDistance / maxDrag) * 100;
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
       updateFlipProgress(newProgress);
     } else if (dragType === 'flap') {
-      // Vertical drag for flap (UP to open - negative deltaY)
-      const dragDistance = -deltaY; // Negative because we want up movement to increase progress
-      const maxDrag = 150; // pixels
+      const dragDistance = -deltaY; 
+      const maxDrag = 150; 
       const progressDelta = (dragDistance / maxDrag) * 100;
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
       updateFlapProgress(newProgress);
@@ -148,7 +146,6 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     setDragType(null);
   };
 
-  // Touch event handlers
   const handleEnvelopeTouchStart = (e: React.TouchEvent) => {
     if (isFlipped) return;
     
@@ -192,8 +189,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
       updateFlipProgress(newProgress);
     } else if (dragType === 'flap') {
-      // Vertical drag for flap (UP to open - negative deltaY)
-      const dragDistance = -deltaY; // Negative because we want up movement to increase progress
+      const dragDistance = -deltaY; 
       const maxDrag = 150;
       const progressDelta = (dragDistance / maxDrag) * 100;
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
@@ -202,7 +198,6 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     e.preventDefault();
   };
 
-  // Add global event listeners
   React.useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -264,7 +259,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         </div>
       </div>
 
-      {/* Flap Control - Right Side Vertical */}
+      {/* Enhanced Vertical Flap Control */}
       {isFlipped && (
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30 animate-fade-in">
           <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
@@ -273,15 +268,12 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 <ArrowDown className="w-6 h-6 text-white transform rotate-180" />
               </div>
               <div className="relative h-48 w-6">
-                {/* Background track */}
                 <div className="w-6 h-full bg-gold/20 rounded-full overflow-hidden">
                   <div 
                     className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full absolute bottom-0"
                     style={{ height: `${flapProgress}%` }}
                   ></div>
                 </div>
-                
-                {/* Custom vertical slider */}
                 <input
                   type="range"
                   min="0"
@@ -371,12 +363,13 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
             {/* Envelope Body */}
             <div className="w-full h-full bg-gradient-to-br from-warm-cream via-ivory to-warm-cream rounded-lg shadow-2xl border border-gold/30 relative overflow-hidden">
               {/* Inner envelope texture - more luxurious */}
-              <div className="absolute inset-3 bg-gradient-to-br from-white/60 to-ivory/40 rounded-md border border-gold/20 shadow-inner"></div>
+              <div className="absolute inset-3 bg-gradient-to-br from-white/80 to-ivory/60 rounded-md border border-gold/30 shadow-inner"></div>
               
               {/* Paper background inside envelope - only visible when flap opens */}
-              <div className={`absolute inset-6 bg-gradient-to-br from-white to-warm-cream/10 rounded-sm shadow-inner border border-gold/10 transition-opacity duration-500 ${flapProgress > 50 ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute inset-6 bg-gradient-to-br from-white to-warm-cream/20 rounded-sm shadow-inner border border-gold/15 transition-opacity duration-500 ${flapProgress > 50 ? 'opacity-100' : 'opacity-0'}`}>
                 {/* Paper texture */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-transparent rounded-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/90 to-transparent rounded-sm"></div>
+                <div className="absolute inset-1 bg-gradient-to-br from-ivory/30 to-transparent rounded-sm"></div>
               </div>
               
               {/* Letter inside (only visible when flap opens significantly) */}
@@ -409,20 +402,20 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               >
                 <div className="w-full h-40 bg-gradient-to-b from-warm-cream via-ivory to-gold/20 shadow-xl border-b border-gold/40 relative">
                   {/* Enhanced flap texture and depth */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/70 to-transparent"></div>
                   
                   {/* Flap center crease with more definition */}
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-full bg-gradient-to-b from-gold/30 to-gold/10"></div>
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-full bg-gradient-to-b from-gold/40 to-gold/10"></div>
                   
                   {/* Enhanced wax seal area */}
                   <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-deep-gold via-gold to-soft-gold rounded-full border-2 border-gold/80 flex items-center justify-center shadow-xl">
                     <Heart className="w-6 h-6 text-white drop-shadow-sm" />
                     {/* Wax seal texture */}
-                    <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
+                    <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/30 to-transparent"></div>
                   </div>
                   
                   {/* Flap shadow underneath */}
-                  <div className="absolute -bottom-2 left-0 w-full h-4 bg-gradient-to-b from-black/10 to-transparent blur-sm"></div>
+                  <div className="absolute -bottom-2 left-0 w-full h-4 bg-gradient-to-b from-black/15 to-transparent blur-sm"></div>
                 </div>
               </div>
             </div>
@@ -449,7 +442,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
 
               <div className="flex items-center justify-center gap-2 text-gold">
                 <div className="w-2 h-2 bg-gold rounded-full animate-ping"></div>
-                <p className="font-sans text-xs">Opening your invitation...</p>
+                <p className="font-sans text-xs">Preparing your journey...</p>
                 <div className="w-2 h-2 bg-gold rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
               </div>
             </div>
@@ -458,7 +451,6 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       </div>
 
       <style>{`
-        /* Horizontal slider styles */
         .slider-horizontal {
           -webkit-appearance: none;
           appearance: none;
@@ -497,14 +489,17 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           cursor: grabbing;
         }
 
-        /* Enhanced vertical slider styles */
+        /* Fixed vertical slider styles to match horizontal */
         .slider-vertical {
           -webkit-appearance: slider-vertical;
+          appearance: none;
           writing-mode: bt-lr;
           background: transparent;
           outline: none;
           width: 24px !important;
           height: 192px !important;
+          transform: rotate(90deg);
+          transform-origin: center;
         }
 
         .slider-vertical::-webkit-slider-thumb {
@@ -517,6 +512,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           border: 2px solid white;
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           cursor: grab;
+          transform: rotate(-90deg);
         }
 
         .slider-vertical::-webkit-slider-thumb:active {
@@ -532,13 +528,13 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           cursor: grab;
           border: none;
+          transform: rotate(-90deg);
         }
 
         .slider-vertical::-moz-range-thumb:active {
           cursor: grabbing;
         }
 
-        /* Remove track styling for cleaner look */
         .slider-horizontal::-webkit-slider-track,
         .slider-vertical::-webkit-slider-track {
           background: transparent;
