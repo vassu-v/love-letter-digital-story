@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Heart } from 'lucide-react';
 import IntroCard from '@/components/IntroCard';
 import PigeonHero from '@/components/PigeonHero';
 import StoryTimeline from '@/components/StoryTimeline';
