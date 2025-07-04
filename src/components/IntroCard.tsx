@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Heart, ArrowRight, ArrowDown } from 'lucide-react';
 
 interface IntroCardProps {
@@ -14,9 +14,24 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   const [flipProgress, setFlipProgress] = useState(0);
   const [flapProgress, setFlapProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragType, setDragType] = useState<'flip' | 'flap' | null>(null);
+  const dragStartRef = useRef({ x: 0, y: 0, initialProgress: 0 });
 
   const handleFlipSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
+    updateFlipProgress(value);
+  };
+
+  const handleFlapSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isFlipped) return;
+    const value = parseInt(e.target.value);
+    updateFlapProgress(value);
+  };
+
+  const updateFlipProgress = (value: number) => {
     setFlipProgress(value);
     
     // Auto-complete if close to end
@@ -35,10 +50,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     }
   };
 
-  const handleFlapSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!isFlipped) return;
-    
-    const value = parseInt(e.target.value);
+  const updateFlapProgress = (value: number) => {
     setFlapProgress(value);
     
     // Auto-complete if close to end
@@ -80,6 +92,132 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     }
   };
 
+  // Mouse/Touch event handlers for envelope drag
+  const handleEnvelopeMouseDown = (e: React.MouseEvent) => {
+    if (isFlipped) return; // Only allow flip drag when not flipped
+    
+    setIsDragging(true);
+    setDragType('flip');
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      initialProgress: flipProgress
+    };
+    e.preventDefault();
+  };
+
+  const handleFlapMouseDown = (e: React.MouseEvent) => {
+    if (!isFlipped) return; // Only allow flap drag when flipped
+    
+    setIsDragging(true);
+    setDragType('flap');
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      initialProgress: flapProgress
+    };
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging || !dragType) return;
+
+    const deltaX = e.clientX - dragStartRef.current.x;
+    const deltaY = e.clientY - dragStartRef.current.y;
+
+    if (dragType === 'flip') {
+      // Horizontal drag for flip
+      const dragDistance = deltaX;
+      const maxDrag = 200; // pixels
+      const progressDelta = (dragDistance / maxDrag) * 100;
+      const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
+      updateFlipProgress(newProgress);
+    } else if (dragType === 'flap') {
+      // Vertical drag for flap (down to open)
+      const dragDistance = deltaY;
+      const maxDrag = 150; // pixels
+      const progressDelta = (dragDistance / maxDrag) * 100;
+      const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
+      updateFlapProgress(newProgress);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setDragType(null);
+  };
+
+  // Touch event handlers
+  const handleEnvelopeTouchStart = (e: React.TouchEvent) => {
+    if (isFlipped) return;
+    
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setDragType('flip');
+    dragStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      initialProgress: flipProgress
+    };
+    e.preventDefault();
+  };
+
+  const handleFlapTouchStart = (e: React.TouchEvent) => {
+    if (!isFlipped) return;
+    
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setDragType('flap');
+    dragStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      initialProgress: flapProgress
+    };
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isDragging || !dragType) return;
+
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - dragStartRef.current.x;
+    const deltaY = touch.clientY - dragStartRef.current.y;
+
+    if (dragType === 'flip') {
+      const dragDistance = deltaX;
+      const maxDrag = 200;
+      const progressDelta = (dragDistance / maxDrag) * 100;
+      const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
+      updateFlipProgress(newProgress);
+    } else if (dragType === 'flap') {
+      const dragDistance = deltaY;
+      const maxDrag = 150;
+      const progressDelta = (dragDistance / maxDrag) * 100;
+      const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
+      updateFlapProgress(newProgress);
+    }
+    e.preventDefault();
+  };
+
+  // Add global event listeners
+  React.useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('touchend', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragType]);
+
   return (
     <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-warm-cream to-ivory p-4 relative overflow-hidden transition-all duration-1000 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
       {/* Background decorative elements */}
@@ -93,20 +231,20 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30">
         <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-gold/20 text-center">
           <p className="font-playfair text-dark-brown text-sm">
-            Use the controls to open your invitation
+            Drag the envelope or use controls to open your invitation
           </p>
         </div>
       </div>
 
-      {/* Flip Control - Bottom Center (Bigger) */}
+      {/* Flip Control - Bottom Center */}
       <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 transition-all duration-500 ${flipProgress >= 100 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-              <ArrowRight className="w-5 h-5 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
+              <ArrowRight className="w-6 h-6 text-white" />
             </div>
-            <div className="relative w-40">
-              <div className="h-4 bg-gold/20 rounded-full overflow-hidden">
+            <div className="relative w-48">
+              <div className="h-6 bg-gold/20 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-gold to-soft-gold transition-all duration-300 rounded-full"
                   style={{ width: `${flipProgress}%` }}
@@ -118,28 +256,28 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 max="100"
                 value={flipProgress}
                 onChange={handleFlipSliderChange}
-                className="absolute inset-0 w-full h-4 opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-6 opacity-0 cursor-pointer"
               />
               <div 
-                className="absolute top-1/2 transform -translate-y-1/2 w-6 h-6 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center"
-                style={{ left: `calc(${flipProgress}% - 12px)` }}
+                className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center"
+                style={{ left: `calc(${flipProgress}% - 16px)` }}
               >
-                <ArrowRight className="w-3 h-3 text-white" />
+                <ArrowRight className="w-4 h-4 text-white" />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Flap Control - Right Side Vertical (Bigger) */}
+      {/* Flap Control - Right Side Vertical */}
       {isFlipped && (
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30 animate-fade-in">
           <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-                <ArrowDown className="w-5 h-5 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
+                <ArrowDown className="w-6 h-6 text-white" />
               </div>
-              <div className="relative h-40 w-4">
+              <div className="relative h-48 w-6">
                 <div className="w-full h-full bg-gold/20 rounded-full overflow-hidden">
                   <div 
                     className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full absolute bottom-0"
@@ -155,10 +293,10 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer vertical-range"
                 />
                 <div 
-                  className="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center"
-                  style={{ bottom: `calc(${flapProgress}% - 12px)` }}
+                  className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center"
+                  style={{ bottom: `calc(${flapProgress}% - 16px)` }}
                 >
-                  <ArrowDown className="w-3 h-3 text-white" />
+                  <ArrowDown className="w-4 h-4 text-white" />
                 </div>
               </div>
             </div>
@@ -173,10 +311,12 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         
         {/* Envelope */}
         <div 
-          className="relative w-full h-full transition-transform duration-300 transform-style-preserve-3d"
+          className={`relative w-full h-full transition-transform duration-300 transform-style-preserve-3d ${isDragging && dragType === 'flip' ? 'cursor-grabbing' : 'cursor-grab'}`}
           style={{
             transform: `rotateY(${flipProgress * 1.8}deg)`
           }}
+          onMouseDown={handleEnvelopeMouseDown}
+          onTouchStart={handleEnvelopeTouchStart}
         >
           {/* Front Side - Realistic Envelope */}
           <div className="absolute inset-0 w-full h-full backface-hidden">
@@ -262,11 +402,13 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
 
               {/* Realistic Envelope Flap */}
               <div 
-                className="absolute top-0 left-0 w-full transition-all duration-500 origin-top z-30"
+                className={`absolute top-0 left-0 w-full transition-all duration-500 origin-top z-30 ${isDragging && dragType === 'flap' ? 'cursor-grabbing' : 'cursor-grab'}`}
                 style={{
                   transform: `rotateX(${flapProgress * 1.5}deg)`,
                   clipPath: 'polygon(0 0, 100% 0, 50% 75%)',
                 }}
+                onMouseDown={handleFlapMouseDown}
+                onTouchStart={handleFlapTouchStart}
               >
                 <div className="w-full h-40 bg-gradient-to-b from-warm-cream via-ivory to-gold/20 shadow-lg border-b border-gold/40 relative">
                   {/* Flap texture and depth */}
@@ -317,16 +459,16 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         .vertical-range {
           writing-mode: bt-lr;
           -webkit-appearance: slider-vertical;
-          width: 16px !important;
-          height: 160px !important;
+          width: 24px !important;
+          height: 192px !important;
           background: transparent;
           outline: none;
         }
         
         .vertical-range::-webkit-slider-thumb {
           appearance: none;
-          width: 24px;
-          height: 24px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
           border: 2px solid white;
@@ -335,8 +477,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         }
         
         .vertical-range::-moz-range-thumb {
-          width: 24px;
-          height: 24px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
           border: 2px solid white;
