@@ -11,6 +11,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   const [flapOpened, setFlapOpened] = useState(false);
   const [letterPulled, setLetterPulled] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showPigeon, setShowPigeon] = useState(false);
+  const [pigeonPhase, setPigeonPhase] = useState(0);
   const [flipProgress, setFlipProgress] = useState(0);
   const [flapProgress, setFlapProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -57,20 +59,31 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     if (value >= 85 && !flapOpened) {
       setFlapProgress(100);
       setFlapOpened(true);
-      // Enhanced sequence with better timing
+      // Enhanced sequence with pigeon animation
       setTimeout(() => {
         setLetterPulled(true);
         setTimeout(() => {
           setShowInvite(true);
-          // Longer delay before transition to let user read the invitation
+          // Start pigeon animation sequence during the 3s invite display
+          setTimeout(() => {
+            setShowPigeon(true);
+            setPigeonPhase(0); // Pigeon appears from corner
+          }, 200);
+          setTimeout(() => {
+            setPigeonPhase(1); // Pigeon flies toward letter
+          }, 800);
+          setTimeout(() => {
+            setPigeonPhase(2); // Pigeon sits on letter
+          }, 1500);
+          // Scene transition after pigeon is settled
           setTimeout(() => {
             setIsTransitioning(true);
             setTimeout(() => {
               onCardOpen();
-            }, 1500); // Smoother transition timing
-          }, 3000); // Give more time to read the invitation
-        }, 1000); // Letter animation time
-      }, 500); // Flap opening time
+            }, 1500);
+          }, 3000);
+        }, 1000);
+      }, 500);
     } else if (value >= 100 && !flapOpened) {
       setFlapOpened(true);
       // Same enhanced sequence
@@ -78,6 +91,16 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         setLetterPulled(true);
         setTimeout(() => {
           setShowInvite(true);
+          setTimeout(() => {
+            setShowPigeon(true);
+            setPigeonPhase(0);
+          }, 200);
+          setTimeout(() => {
+            setPigeonPhase(1);
+          }, 800);
+          setTimeout(() => {
+            setPigeonPhase(2);
+          }, 1500);
           setTimeout(() => {
             setIsTransitioning(true);
             setTimeout(() => {
@@ -90,6 +113,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       setFlapOpened(false);
       setLetterPulled(false);
       setShowInvite(false);
+      setShowPigeon(false);
+      setPigeonPhase(0);
     }
   };
 
@@ -198,6 +223,19 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     e.preventDefault();
   };
 
+  const getPigeonStyle = () => {
+    switch (pigeonPhase) {
+      case 0:
+        return 'bottom-8 right-8 opacity-0 scale-75 transform translate-x-20 translate-y-20';
+      case 1:
+        return 'bottom-16 right-1/2 opacity-100 scale-90 transform translate-x-1/2';
+      case 2:
+        return 'bottom-20 right-1/2 opacity-100 scale-100 transform translate-x-1/2';
+      default:
+        return 'bottom-8 right-8 opacity-0 scale-75';
+    }
+  };
+
   React.useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -259,7 +297,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         </div>
       </div>
 
-      {/* Enhanced Vertical Flap Control */}
+      {/* Fixed Vertical Flap Control */}
       {isFlipped && (
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30 animate-fade-in">
           <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
@@ -280,7 +318,11 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   max="100"
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
-                  className="absolute inset-0 w-6 h-48 cursor-pointer slider-vertical"
+                  className="absolute top-0 left-0 w-6 h-48 cursor-pointer slider-vertical"
+                  style={{ 
+                    writingMode: 'bt-lr',
+                    WebkitAppearance: 'slider-vertical'
+                  }}
                 />
               </div>
             </div>
@@ -378,7 +420,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               } ${
                 letterPulled ? 'transform -translate-y-8 scale-110 shadow-2xl rotate-1 z-20' : 'transform translate-y-0 z-10'
               }`}>
-                <div className="p-6 text-center h-full flex flex-col justify-center bg-gradient-to-br from-white to-warm-cream/20 rounded-sm">
+                <div className="p-6 text-center h-full flex flex-col justify-center bg-gradient-to-br from-white to-warm-cream/20 rounded-sm relative">
                   <div className="mb-4">
                     <Heart className="w-8 h-8 text-gold mx-auto mb-3 animate-pulse" />
                   </div>
@@ -387,6 +429,22 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   <p className="font-playfair text-xl text-dark-brown font-semibold">10th Anniversary</p>
                   <p className="font-playfair text-lg text-dark-brown">Celebration</p>
                   <div className="w-16 h-0.5 bg-gold mx-auto mt-4"></div>
+                  
+                  {/* Pigeon Animation on Letter */}
+                  {showPigeon && (
+                    <div className={`absolute transition-all duration-1000 ease-in-out ${getPigeonStyle()}`}>
+                      <div className="relative">
+                        <div className="text-2xl animate-bounce" style={{ animationDuration: '1.5s' }}>
+                          🕊️
+                        </div>
+                        {pigeonPhase === 2 && (
+                          <div className="absolute -top-6 -left-8 bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-xs text-dark-brown border border-gold/20 animate-fade-in">
+                            Ready! ✨
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -489,17 +547,11 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           cursor: grabbing;
         }
 
-        /* Fixed vertical slider styles to match horizontal */
+        /* Fixed vertical slider styles */
         .slider-vertical {
           -webkit-appearance: slider-vertical;
-          appearance: none;
-          writing-mode: bt-lr;
           background: transparent;
           outline: none;
-          width: 24px !important;
-          height: 192px !important;
-          transform: rotate(90deg);
-          transform-origin: center;
         }
 
         .slider-vertical::-webkit-slider-thumb {
@@ -512,7 +564,6 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           border: 2px solid white;
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           cursor: grab;
-          transform: rotate(-90deg);
         }
 
         .slider-vertical::-webkit-slider-thumb:active {
@@ -528,7 +579,6 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           cursor: grab;
           border: none;
-          transform: rotate(-90deg);
         }
 
         .slider-vertical::-moz-range-thumb:active {
