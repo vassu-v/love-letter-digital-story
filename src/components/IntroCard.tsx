@@ -134,8 +134,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
       updateFlipProgress(newProgress);
     } else if (dragType === 'flap') {
-      // Vertical drag for flap (down to open)
-      const dragDistance = deltaY;
+      // Vertical drag for flap (UP to open - negative deltaY)
+      const dragDistance = -deltaY; // Negative because we want up movement to increase progress
       const maxDrag = 150; // pixels
       const progressDelta = (dragDistance / maxDrag) * 100;
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
@@ -192,7 +192,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
       updateFlipProgress(newProgress);
     } else if (dragType === 'flap') {
-      const dragDistance = deltaY;
+      // Vertical drag for flap (UP to open - negative deltaY)
+      const dragDistance = -deltaY; // Negative because we want up movement to increase progress
       const maxDrag = 150;
       const progressDelta = (dragDistance / maxDrag) * 100;
       const newProgress = Math.max(0, Math.min(100, dragStartRef.current.initialProgress + progressDelta));
@@ -256,14 +257,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 max="100"
                 value={flipProgress}
                 onChange={handleFlipSliderChange}
-                className="absolute inset-0 w-full h-6 opacity-0 cursor-pointer"
+                className="absolute inset-0 w-full h-6 cursor-pointer slider-horizontal"
               />
-              <div 
-                className="absolute top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center"
-                style={{ left: `calc(${flipProgress}% - 16px)` }}
-              >
-                <ArrowRight className="w-4 h-4 text-white" />
-              </div>
             </div>
           </div>
         </div>
@@ -275,7 +270,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-                <ArrowDown className="w-6 h-6 text-white" />
+                <ArrowDown className="w-6 h-6 text-white transform rotate-180" />
               </div>
               <div className="relative h-48 w-6 flex items-center justify-center">
                 {/* Background track */}
@@ -293,25 +288,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   max="100"
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
-                  className="absolute w-6 h-48 opacity-0 cursor-pointer"
-                  style={{
-                    writingMode: 'bt-lr',
-                    WebkitAppearance: 'slider-vertical',
-                    transform: 'rotate(180deg)'
-                  }}
+                  className="absolute w-6 h-48 cursor-pointer slider-vertical"
                 />
-                
-                {/* Custom thumb */}
-                <div 
-                  className="absolute w-8 h-8 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center pointer-events-none"
-                  style={{ 
-                    bottom: `calc(${flapProgress}% - 16px)`,
-                    left: '50%',
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  <ArrowDown className="w-4 h-4 text-white" />
-                </div>
               </div>
             </div>
           </div>
@@ -472,20 +450,15 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       </div>
 
       <style>{`
-        /* Vertical slider styles */
-        input[type="range"] {
+        /* Horizontal slider styles */
+        .slider-horizontal {
           -webkit-appearance: none;
           appearance: none;
           background: transparent;
-          cursor: pointer;
+          outline: none;
         }
 
-        /* Webkit browsers */
-        input[type="range"]::-webkit-slider-track {
-          background: transparent;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
+        .slider-horizontal::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
           height: 32px;
@@ -494,23 +467,77 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           background: linear-gradient(45deg, #C8A97E, #D4A574);
           border: 2px solid white;
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-          cursor: pointer;
+          cursor: grab;
         }
 
-        /* Firefox */
-        input[type="range"]::-moz-range-track {
+        .slider-horizontal::-webkit-slider-thumb:active {
+          cursor: grabbing;
+        }
+
+        .slider-horizontal::-moz-range-thumb {
+          height: 32px;
+          width: 32px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: grab;
+          border: none;
+        }
+
+        .slider-horizontal::-moz-range-thumb:active {
+          cursor: grabbing;
+        }
+
+        /* Vertical slider styles */
+        .slider-vertical {
+          -webkit-appearance: slider-vertical;
+          writing-mode: bt-lr;
+          background: transparent;
+          outline: none;
+        }
+
+        .slider-vertical::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 32px;
+          width: 32px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: grab;
+        }
+
+        .slider-vertical::-webkit-slider-thumb:active {
+          cursor: grabbing;
+        }
+
+        .slider-vertical::-moz-range-thumb {
+          height: 32px;
+          width: 32px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #C8A97E, #D4A574);
+          border: 2px solid white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          cursor: grab;
+          border: none;
+        }
+
+        .slider-vertical::-moz-range-thumb:active {
+          cursor: grabbing;
+        }
+
+        /* Remove track styling for cleaner look */
+        .slider-horizontal::-webkit-slider-track,
+        .slider-vertical::-webkit-slider-track {
           background: transparent;
           border: none;
         }
 
-        input[type="range"]::-moz-range-thumb {
-          height: 32px;
-          width: 32px;
-          border-radius: 50%;
-          background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-          cursor: pointer;
+        .slider-horizontal::-moz-range-track,
+        .slider-vertical::-moz-range-track {
+          background: transparent;
           border: none;
         }
       `}</style>
