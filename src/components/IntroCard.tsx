@@ -289,7 +289,6 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
                   className="absolute inset-0 w-6 h-48 cursor-pointer slider-vertical"
-                  orient="vertical"
                 />
               </div>
             </div>
