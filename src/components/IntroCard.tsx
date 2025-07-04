@@ -277,24 +277,38 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
                 <ArrowDown className="w-6 h-6 text-white" />
               </div>
-              <div className="relative h-48 w-6">
-                <div className="w-full h-full bg-gold/20 rounded-full overflow-hidden">
+              <div className="relative h-48 w-6 flex items-center justify-center">
+                {/* Background track */}
+                <div className="w-full h-full bg-gold/20 rounded-full overflow-hidden relative">
                   <div 
                     className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full absolute bottom-0"
                     style={{ height: `${flapProgress}%` }}
                   ></div>
                 </div>
+                
+                {/* Custom vertical slider */}
                 <input
                   type="range"
                   min="0"
                   max="100"
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer vertical-range"
+                  className="absolute w-6 h-48 opacity-0 cursor-pointer"
+                  style={{
+                    writingMode: 'bt-lr',
+                    WebkitAppearance: 'slider-vertical',
+                    transform: 'rotate(180deg)'
+                  }}
                 />
+                
+                {/* Custom thumb */}
                 <div 
-                  className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center"
-                  style={{ bottom: `calc(${flapProgress}% - 16px)` }}
+                  className="absolute w-8 h-8 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full border-2 border-white shadow-lg transition-all duration-200 hover:scale-110 cursor-pointer flex items-center justify-center pointer-events-none"
+                  style={{ 
+                    bottom: `calc(${flapProgress}% - 16px)`,
+                    left: '50%',
+                    transform: 'translateX(-50%)'
+                  }}
                 >
                   <ArrowDown className="w-4 h-4 text-white" />
                 </div>
@@ -360,14 +374,14 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 <div className="text-center">
                   <div className="mb-6">
                     <p className="font-dancing text-3xl text-gold mb-3">To Our Beloved</p>
-                    <p className="font-playfair text-4xl text-dark-brown capitalize font-bold leading-tight">{guestName}</p>
+                    <p className="font-playfair text-5xl text-dark-brown capitalize font-bold leading-tight">{guestName}</p>
                   </div>
                   
                   <div className="w-24 h-0.5 bg-gold mx-auto mb-6"></div>
                   
                   <div className="mb-4">
                     <p className="font-dancing text-2xl text-gold mb-2">From</p>
-                    <p className="font-playfair text-3xl text-dark-brown font-bold">Aarav & Riya</p>
+                    <p className="font-playfair text-4xl text-dark-brown font-bold">Aarav & Riya</p>
                   </div>
                 </div>
               </div>
@@ -402,7 +416,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 </div>
               </div>
 
-              {/* Realistic Envelope Flap */}
+              {/* Realistic Envelope Flap - Draggable */}
               <div 
                 className={`absolute top-0 left-0 w-full transition-all duration-500 origin-top z-30 ${isDragging && dragType === 'flap' ? 'cursor-grabbing' : 'cursor-grab'}`}
                 style={{
@@ -458,34 +472,46 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       </div>
 
       <style>{`
-        .vertical-range {
-          writing-mode: bt-lr;
-          -webkit-appearance: slider-vertical;
-          width: 24px !important;
-          height: 192px !important;
-          background: transparent;
-          outline: none;
-        }
-        
-        .vertical-range::-webkit-slider-thumb {
+        /* Vertical slider styles */
+        input[type="range"] {
+          -webkit-appearance: none;
           appearance: none;
-          width: 32px;
+          background: transparent;
+          cursor: pointer;
+        }
+
+        /* Webkit browsers */
+        input[type="range"]::-webkit-slider-track {
+          background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
           height: 32px;
+          width: 32px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
           border: 2px solid white;
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           cursor: pointer;
         }
-        
-        .vertical-range::-moz-range-thumb {
-          width: 32px;
+
+        /* Firefox */
+        input[type="range"]::-moz-range-track {
+          background: transparent;
+          border: none;
+        }
+
+        input[type="range"]::-moz-range-thumb {
           height: 32px;
+          width: 32px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
           border: 2px solid white;
           box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           cursor: pointer;
+          border: none;
         }
       `}</style>
     </div>
