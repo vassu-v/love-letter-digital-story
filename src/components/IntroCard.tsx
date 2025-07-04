@@ -206,7 +206,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
       document.addEventListener('touchend', handleMouseUp);
       
       return () => {
@@ -381,11 +381,13 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               {/* Inner envelope texture */}
               <div className="absolute inset-3 bg-gradient-to-br from-white/40 to-ivory/60 rounded-md border border-gold/10"></div>
               
-              {/* Paper background inside envelope */}
-              <div className="absolute inset-6 bg-white rounded-sm shadow-inner border border-gold/10"></div>
+              {/* Paper background inside envelope - only visible when flap opens */}
+              <div className={`absolute inset-6 bg-white rounded-sm shadow-inner border border-gold/10 transition-opacity duration-500 ${flapProgress > 50 ? 'opacity-100' : 'opacity-0'}`}></div>
               
-              {/* Letter inside (visible when flap opens) */}
+              {/* Letter inside (only visible when flap opens significantly) */}
               <div className={`absolute inset-8 bg-white rounded-sm shadow-lg border border-gold/20 transition-all duration-800 ${
+                flapProgress > 60 ? 'opacity-100' : 'opacity-0'
+              } ${
                 letterPulled ? 'transform -translate-y-8 scale-110 shadow-2xl rotate-1 z-20' : 'transform translate-y-0 z-10'
               }`}>
                 <div className="p-6 text-center h-full flex flex-col justify-center bg-gradient-to-br from-white to-warm-cream/20 rounded-sm">
