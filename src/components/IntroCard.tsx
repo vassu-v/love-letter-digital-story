@@ -48,6 +48,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
       setFlapOpened(false);
       setLetterPulled(false);
       setShowInvite(false);
+      setShowPigeon(false);
+      setPigeonPhase(0);
       setFlapProgress(0);
     }
   };
@@ -64,24 +66,24 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         setLetterPulled(true);
         setTimeout(() => {
           setShowInvite(true);
-          // Start pigeon animation sequence during the 3s invite display
+          // Start pigeon animation sequence during the 5s invite display
           setTimeout(() => {
             setShowPigeon(true);
             setPigeonPhase(0); // Pigeon appears from corner
-          }, 200);
+          }, 500);
           setTimeout(() => {
             setPigeonPhase(1); // Pigeon flies toward letter
-          }, 800);
+          }, 1200);
           setTimeout(() => {
             setPigeonPhase(2); // Pigeon sits on letter
-          }, 1500);
-          // Scene transition after pigeon is settled
+          }, 2000);
+          // Scene transition after pigeon is settled - extended timing
           setTimeout(() => {
             setIsTransitioning(true);
             setTimeout(() => {
               onCardOpen();
             }, 1500);
-          }, 3000);
+          }, 5000);
         }, 1000);
       }, 500);
     } else if (value >= 100 && !flapOpened) {
@@ -94,19 +96,19 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           setTimeout(() => {
             setShowPigeon(true);
             setPigeonPhase(0);
-          }, 200);
+          }, 500);
           setTimeout(() => {
             setPigeonPhase(1);
-          }, 800);
+          }, 1200);
           setTimeout(() => {
             setPigeonPhase(2);
-          }, 1500);
+          }, 2000);
           setTimeout(() => {
             setIsTransitioning(true);
             setTimeout(() => {
               onCardOpen();
             }, 1500);
-          }, 3000);
+          }, 5000);
         }, 1000);
       }, 500);
     } else if (value < 100 && flapOpened) {
@@ -226,13 +228,13 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   const getPigeonStyle = () => {
     switch (pigeonPhase) {
       case 0:
-        return 'bottom-8 right-8 opacity-0 scale-75 transform translate-x-20 translate-y-20';
+        return 'bottom-4 right-4 opacity-0 scale-75 transform translate-x-10 translate-y-10';
       case 1:
-        return 'bottom-16 right-1/2 opacity-100 scale-90 transform translate-x-1/2';
+        return 'bottom-12 right-1/2 opacity-100 scale-90 transform translate-x-1/2 -translate-y-2';
       case 2:
-        return 'bottom-20 right-1/2 opacity-100 scale-100 transform translate-x-1/2';
+        return 'bottom-16 right-1/2 opacity-100 scale-100 transform translate-x-1/2 -translate-y-4';
       default:
-        return 'bottom-8 right-8 opacity-0 scale-75';
+        return 'bottom-4 right-4 opacity-0 scale-75';
     }
   };
 
@@ -253,34 +255,36 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
   }, [isDragging, dragType]);
 
   return (
-    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-warm-cream to-ivory p-4 relative overflow-hidden transition-all duration-1000 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-2 h-2 bg-gold/30 rounded-full animate-float"></div>
-        <div className="absolute top-32 right-20 w-1 h-1 bg-soft-gold/40 rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-40 left-1/4 w-3 h-3 bg-gold/20 rounded-full animate-float" style={{ animationDelay: '4s' }}></div>
+    <div className={`min-h-screen flex items-center justify-center bg-gradient-to-br from-warm-cream via-ivory to-blush-pink p-4 relative overflow-hidden transition-all duration-1000 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+      {/* Enhanced background decorative elements */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-3 h-3 bg-gradient-to-br from-gold to-soft-gold rounded-full animate-float shadow-lg"></div>
+        <div className="absolute top-32 right-20 w-2 h-2 bg-gradient-to-br from-rose-gold to-gold rounded-full animate-float shadow-md" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-40 left-1/4 w-4 h-4 bg-gradient-to-br from-soft-gold to-deep-gold rounded-full animate-float shadow-lg" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-gradient-to-br from-blush-pink to-rose-gold rounded-full animate-float shadow-sm" style={{ animationDelay: '6s' }}></div>
       </div>
 
-      {/* Instructions */}
+      {/* Enhanced Instructions */}
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-6 py-3 shadow-lg border border-gold/20 text-center">
-          <p className="font-playfair text-dark-brown text-sm">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl px-8 py-4 shadow-xl border border-gold/30 text-center">
+          <p className="font-playfair text-dark-brown text-base font-medium">
             Drag the envelope or use controls to open your invitation
           </p>
+          <div className="w-16 h-0.5 bg-gradient-to-r from-gold to-soft-gold mx-auto mt-2 rounded-full"></div>
         </div>
       </div>
 
-      {/* Flip Control - Bottom Center */}
+      {/* Enhanced Flip Control - Bottom Center */}
       <div className={`absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 transition-all duration-500 ${flipProgress >= 100 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-              <ArrowRight className="w-6 h-6 text-white" />
+        <div className="bg-white/90 backdrop-blur-md rounded-full p-6 shadow-2xl border border-gold/30">
+          <div className="flex items-center gap-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full flex items-center justify-center shadow-xl border-2 border-white">
+              <ArrowRight className="w-7 h-7 text-white drop-shadow-sm" />
             </div>
-            <div className="relative w-48">
-              <div className="h-6 bg-gold/20 rounded-full overflow-hidden">
+            <div className="relative w-56">
+              <div className="h-8 bg-gradient-to-r from-gold/20 via-soft-gold/30 to-gold/20 rounded-full overflow-hidden shadow-inner border border-gold/20">
                 <div 
-                  className="h-full bg-gradient-to-r from-gold to-soft-gold transition-all duration-300 rounded-full"
+                  className="h-full bg-gradient-to-r from-gold via-soft-gold to-deep-gold transition-all duration-300 rounded-full shadow-sm"
                   style={{ width: `${flipProgress}%` }}
                 ></div>
               </div>
@@ -290,25 +294,25 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 max="100"
                 value={flipProgress}
                 onChange={handleFlipSliderChange}
-                className="absolute inset-0 w-full h-6 cursor-pointer slider-horizontal"
+                className="absolute inset-0 w-full h-8 cursor-pointer slider-horizontal opacity-0"
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Fixed Vertical Flap Control */}
+      {/* Enhanced Vertical Flap Control */}
       {isFlipped && (
         <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30 animate-fade-in">
-          <div className="bg-white/95 backdrop-blur-sm rounded-full p-4 shadow-xl border border-gold/20">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
-                <ArrowDown className="w-6 h-6 text-white transform rotate-180" />
+          <div className="bg-white/90 backdrop-blur-md rounded-full p-6 shadow-2xl border border-gold/30">
+            <div className="flex flex-col items-center gap-6">
+              <div className="w-14 h-14 bg-gradient-to-br from-gold via-soft-gold to-deep-gold rounded-full flex items-center justify-center shadow-xl border-2 border-white">
+                <ArrowDown className="w-7 h-7 text-white transform rotate-180 drop-shadow-sm" />
               </div>
-              <div className="relative h-48 w-6">
-                <div className="w-6 h-full bg-gold/20 rounded-full overflow-hidden">
+              <div className="relative h-56 w-8">
+                <div className="w-8 h-full bg-gradient-to-t from-gold/20 via-soft-gold/30 to-gold/20 rounded-full overflow-hidden shadow-inner border border-gold/20">
                   <div 
-                    className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full absolute bottom-0"
+                    className="w-full bg-gradient-to-t from-gold via-soft-gold to-deep-gold transition-all duration-300 rounded-full absolute bottom-0 shadow-sm"
                     style={{ height: `${flapProgress}%` }}
                   ></div>
                 </div>
@@ -318,11 +322,7 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   max="100"
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
-                  className="absolute top-0 left-0 w-6 h-48 cursor-pointer slider-vertical"
-                  style={{ 
-                    writingMode: 'bt-lr',
-                    WebkitAppearance: 'slider-vertical'
-                  }}
+                  className="absolute inset-0 w-8 h-full cursor-pointer slider-vertical opacity-0"
                 />
               </div>
             </div>
@@ -483,26 +483,46 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         {/* Full Invite Message */}
         {showInvite && (
           <div className="absolute inset-0 flex items-center justify-center animate-fade-in-up z-40">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 text-center border border-gold/20 transform animate-scale-in max-w-sm">
-              <div className="mb-6">
-                <Heart className="w-8 h-8 text-gold mx-auto mb-3 animate-pulse" />
-                <h2 className="font-playfair text-3xl text-dark-brown mb-3">You're Invited!</h2>
-                <p className="font-dancing text-2xl text-gold mb-2">to our</p>
-                <p className="font-playfair text-xl text-dark-brown">10th Anniversary Celebration</p>
+            <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-10 text-center border-2 border-gold/30 transform animate-scale-in max-w-md">
+              <div className="mb-8">
+                <div className="w-16 h-16 bg-gradient-to-br from-gold to-deep-gold rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+                  <Heart className="w-8 h-8 text-white animate-pulse drop-shadow-sm" />
+                </div>
+                <h2 className="font-playfair text-4xl text-dark-brown mb-4 font-bold">You're Invited!</h2>
+                <p className="font-dancing text-3xl text-gold mb-3">to our</p>
+                <p className="font-playfair text-2xl text-dark-brown font-semibold">10th Anniversary</p>
+                <p className="font-playfair text-xl text-dark-brown">Celebration</p>
               </div>
               
-              <div className="mb-4">
-                <div className="w-16 h-0.5 bg-gold mx-auto mb-4"></div>
-                <p className="font-sans text-sm text-dark-brown/70">
-                  A decade of love, laughter, and memories
+              <div className="mb-6">
+                <div className="w-20 h-1 bg-gradient-to-r from-gold to-soft-gold mx-auto mb-6 rounded-full"></div>
+                <p className="font-sans text-base text-dark-brown/80 leading-relaxed">
+                  A decade of love, laughter, and memories.<br/>
+                  Join us for an evening of celebration!
                 </p>
               </div>
 
-              <div className="flex items-center justify-center gap-2 text-gold">
-                <div className="w-2 h-2 bg-gold rounded-full animate-ping"></div>
-                <p className="font-sans text-xs">Preparing your journey...</p>
-                <div className="w-2 h-2 bg-gold rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+              <div className="flex items-center justify-center gap-3 text-gold">
+                <div className="w-3 h-3 bg-gold rounded-full animate-ping"></div>
+                <p className="font-sans text-sm font-medium">Preparing your journey...</p>
+                <div className="w-3 h-3 bg-gold rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
               </div>
+
+              {/* Enhanced Pigeon Animation on Invitation */}
+              {showPigeon && (
+                <div className={`absolute transition-all duration-1000 ease-in-out ${getPigeonStyle()}`}>
+                  <div className="relative">
+                    <div className="text-3xl animate-bounce" style={{ animationDuration: '2s' }}>
+                      🕊️
+                    </div>
+                    {pigeonPhase === 2 && (
+                      <div className="absolute -top-8 -left-10 bg-gold/90 text-white rounded-xl px-3 py-2 text-sm font-medium animate-fade-in shadow-lg">
+                        Ready! ✨
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -519,70 +539,73 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
         .slider-horizontal::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          height: 32px;
-          width: 32px;
+          height: 36px;
+          width: 36px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
           cursor: grab;
         }
 
         .slider-horizontal::-webkit-slider-thumb:active {
           cursor: grabbing;
+          transform: scale(1.1);
         }
 
         .slider-horizontal::-moz-range-thumb {
-          height: 32px;
-          width: 32px;
+          height: 36px;
+          width: 36px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
           cursor: grab;
-          border: none;
         }
 
         .slider-horizontal::-moz-range-thumb:active {
           cursor: grabbing;
+          transform: scale(1.1);
         }
 
-        /* Fixed vertical slider styles */
         .slider-vertical {
           -webkit-appearance: slider-vertical;
           background: transparent;
           outline: none;
+          transform: rotate(-90deg);
+          transform-origin: center;
         }
 
         .slider-vertical::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          height: 32px;
-          width: 32px;
+          height: 36px;
+          width: 36px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
           cursor: grab;
         }
 
         .slider-vertical::-webkit-slider-thumb:active {
           cursor: grabbing;
+          transform: scale(1.1);
         }
 
         .slider-vertical::-moz-range-thumb {
-          height: 32px;
-          width: 32px;
+          height: 36px;
+          width: 36px;
           border-radius: 50%;
           background: linear-gradient(45deg, #C8A97E, #D4A574);
-          border: 2px solid white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          border: 3px solid white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
           cursor: grab;
-          border: none;
         }
 
         .slider-vertical::-moz-range-thumb:active {
           cursor: grabbing;
+          transform: scale(1.1);
         }
 
         .slider-horizontal::-webkit-slider-track,
