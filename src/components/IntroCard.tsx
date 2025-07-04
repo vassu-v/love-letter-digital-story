@@ -272,9 +272,9 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
               <div className="w-12 h-12 bg-gradient-to-br from-gold to-soft-gold rounded-full flex items-center justify-center shadow-lg">
                 <ArrowDown className="w-6 h-6 text-white transform rotate-180" />
               </div>
-              <div className="relative h-48 w-6 flex items-center justify-center">
+              <div className="relative h-48 w-6">
                 {/* Background track */}
-                <div className="w-full h-full bg-gold/20 rounded-full overflow-hidden relative">
+                <div className="w-6 h-full bg-gold/20 rounded-full overflow-hidden">
                   <div 
                     className="w-full bg-gradient-to-t from-gold to-soft-gold transition-all duration-300 rounded-full absolute bottom-0"
                     style={{ height: `${flapProgress}%` }}
@@ -288,7 +288,8 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                   max="100"
                   value={flapProgress}
                   onChange={handleFlapSliderChange}
-                  className="absolute w-6 h-48 cursor-pointer slider-vertical"
+                  className="absolute inset-0 w-6 h-48 cursor-pointer slider-vertical"
+                  orient="vertical"
                 />
               </div>
             </div>
@@ -370,11 +371,14 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180">
             {/* Envelope Body */}
             <div className="w-full h-full bg-gradient-to-br from-warm-cream via-ivory to-warm-cream rounded-lg shadow-2xl border border-gold/30 relative overflow-hidden">
-              {/* Inner envelope texture */}
-              <div className="absolute inset-3 bg-gradient-to-br from-white/40 to-ivory/60 rounded-md border border-gold/10"></div>
+              {/* Inner envelope texture - more luxurious */}
+              <div className="absolute inset-3 bg-gradient-to-br from-white/60 to-ivory/40 rounded-md border border-gold/20 shadow-inner"></div>
               
               {/* Paper background inside envelope - only visible when flap opens */}
-              <div className={`absolute inset-6 bg-white rounded-sm shadow-inner border border-gold/10 transition-opacity duration-500 ${flapProgress > 50 ? 'opacity-100' : 'opacity-0'}`}></div>
+              <div className={`absolute inset-6 bg-gradient-to-br from-white to-warm-cream/10 rounded-sm shadow-inner border border-gold/10 transition-opacity duration-500 ${flapProgress > 50 ? 'opacity-100' : 'opacity-0'}`}>
+                {/* Paper texture */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-transparent rounded-sm"></div>
+              </div>
               
               {/* Letter inside (only visible when flap opens significantly) */}
               <div className={`absolute inset-8 bg-white rounded-sm shadow-lg border border-gold/20 transition-all duration-800 ${
@@ -404,17 +408,22 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
                 onMouseDown={handleFlapMouseDown}
                 onTouchStart={handleFlapTouchStart}
               >
-                <div className="w-full h-40 bg-gradient-to-b from-warm-cream via-ivory to-gold/20 shadow-lg border-b border-gold/40 relative">
-                  {/* Flap texture and depth */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent"></div>
+                <div className="w-full h-40 bg-gradient-to-b from-warm-cream via-ivory to-gold/20 shadow-xl border-b border-gold/40 relative">
+                  {/* Enhanced flap texture and depth */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-transparent"></div>
                   
-                  {/* Flap center crease */}
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-full bg-gold/20"></div>
+                  {/* Flap center crease with more definition */}
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-full bg-gradient-to-b from-gold/30 to-gold/10"></div>
                   
-                  {/* Wax seal area */}
-                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-deep-gold to-gold rounded-full border-2 border-gold/60 flex items-center justify-center shadow-lg">
-                    <Heart className="w-6 h-6 text-white" />
+                  {/* Enhanced wax seal area */}
+                  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-gradient-to-br from-deep-gold via-gold to-soft-gold rounded-full border-2 border-gold/80 flex items-center justify-center shadow-xl">
+                    <Heart className="w-6 h-6 text-white drop-shadow-sm" />
+                    {/* Wax seal texture */}
+                    <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
                   </div>
+                  
+                  {/* Flap shadow underneath */}
+                  <div className="absolute -bottom-2 left-0 w-full h-4 bg-gradient-to-b from-black/10 to-transparent blur-sm"></div>
                 </div>
               </div>
             </div>
@@ -489,12 +498,14 @@ const IntroCard: React.FC<IntroCardProps> = ({ guestName = "You", onCardOpen }) 
           cursor: grabbing;
         }
 
-        /* Vertical slider styles */
+        /* Enhanced vertical slider styles */
         .slider-vertical {
           -webkit-appearance: slider-vertical;
           writing-mode: bt-lr;
           background: transparent;
           outline: none;
+          width: 24px !important;
+          height: 192px !important;
         }
 
         .slider-vertical::-webkit-slider-thumb {
